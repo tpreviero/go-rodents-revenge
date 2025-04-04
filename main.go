@@ -22,7 +22,7 @@ func main() {
 	}
 }
 
-var keyPressedToMove = map[int32]*Move{
+var keyToMove = map[int32]*Move{
 	rl.KeyUp:    {-1, 0},
 	rl.KeyDown:  {1, 0},
 	rl.KeyLeft:  {0, -1},
@@ -41,29 +41,34 @@ func (g *Game) Update() {
 	}
 
 	if g.GameState == Playing {
-		move, ok := keyPressedToMove[rl.GetKeyPressed()]
+		move, ok := keyToMove[rl.GetKeyPressed()]
 		if ok {
-			moveRodent(g.Board, move)
+			g.Board.move(rodent, move)
 		}
 	}
 }
 
-func (b *Board) move(row, colum, dRow, dColumn int) bool {
-	newRow, newColumn := row+dRow, colum+dColumn
+func (b *Board) move(position *Position, move *Move) bool {
+	next := position.after(move)
 
-	if b.Objects[newRow][newColumn] == Wall {
-		return false
-	}
-
-	if b.Objects[newRow][newColumn] == Empty {
-		b.Objects[newRow][newColumn] = b.Objects[row][colum]
-		b.Objects[row][colum] = Empty
+	if b.at(position) == Rodent && b.at(next) == Cat {
+		b.set(position, Empty)
 		return true
 	}
 
-	if b.move(newRow, newColumn, dRow, dColumn) {
-		b.Objects[newRow][newColumn] = b.Objects[row][colum]
-		b.Objects[row][colum] = Empty
+	if b.at(next) == Wall {
+		return false
+	}
+
+	if b.at(next) == Empty {
+		b.set(next, b.at(position))
+		b.set(position, Empty)
+		return true
+	}
+
+	if b.move(next, move) {
+		b.set(next, b.at(position))
+		b.set(position, Empty)
 		return true
 	}
 

@@ -23,9 +23,24 @@ type Move struct {
 	Column int
 }
 
+func (p *Position) after(move *Move) *Position {
+	return &Position{
+		Row:    p.Row + move.Row,
+		Column: p.Column + move.Column,
+	}
+}
+
 type Board struct {
 	Objects       [][]Object
 	LastCatUpdate time.Time
+}
+
+func (b *Board) at(p *Position) Object {
+	return b.Objects[p.Row][p.Column]
+}
+
+func (b *Board) set(p *Position, object Object) {
+	b.Objects[p.Row][p.Column] = object
 }
 
 type GameState int
