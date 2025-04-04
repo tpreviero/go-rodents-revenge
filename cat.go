@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var catsPossivleMoves = []*Move{
+var catsPossibleMoves = []*Move{
 	{-1, -1},
 	{-1, 0},
 	{-1, 1},
@@ -64,7 +64,7 @@ func (b *Board) moveCatAt(cat *Position) {
 func (b *Board) getPossibleMoves(cat *Position) []*Move {
 	var moves []*Move
 
-	for _, dir := range catsPossivleMoves {
+	for _, dir := range catsPossibleMoves {
 		nextPosition := cat.after(dir)
 		if b.isWalkable(nextPosition) {
 			moves = append(moves, dir)
@@ -87,22 +87,11 @@ func (b *Board) aStarPathfinding(cat, rodent *Position) *Position {
 		parent  *node
 	}
 
-	allPossibleMoves := []Move{
-		{-1, -1},
-		{-1, 0},
-		{-1, 1},
-		{0, -1},
-		{0, 1},
-		{1, -1},
-		{1, 0},
-		{1, 1},
-	}
-
-	heuristic := func(a, b Position) int {
+	heuristic := func(a, b *Position) int {
 		return abs(a.Row-b.Row) + abs(a.Column-b.Column) // Manhattan Distance
 	}
 
-	startNode := &node{pos: *cat, g: 0, h: heuristic(*cat, *rodent), f: heuristic(*cat, *rodent)}
+	startNode := &node{pos: *cat, g: 0, h: heuristic(cat, rodent), f: heuristic(cat, rodent)}
 	openSet := map[Position]*node{startNode.pos: startNode}
 	closedSet := make(map[Position]bool)
 
@@ -126,24 +115,24 @@ func (b *Board) aStarPathfinding(cat, rodent *Position) *Position {
 		}
 
 		// Expand neighbors
-		for _, d := range allPossibleMoves {
-			neighborPos := Position{current.pos.Row + d.Row, current.pos.Column + d.Column}
-			if closedSet[neighborPos] || !b.isWalkable(neighborPos) {
+		for _, d := range catsPossibleMoves {
+			neighborPos := current.pos.after(d)
+			if closedSet[*neighborPos] || !b.isWalkable(neighborPos) {
 				continue
 			}
 
 			gScore := current.g + 1
 
-			neighborNode, exists := openSet[neighborPos]
+			neighborNode, exists := openSet[*neighborPos]
 			if !exists || gScore < neighborNode.g {
 				neighborNode = &node{
-					pos:    neighborPos,
+					pos:    *neighborPos,
 					g:      gScore,
-					h:      heuristic(neighborPos, *rodent),
-					f:      gScore + heuristic(neighborPos, *rodent),
+					h:      heuristic(neighborPos, rodent),
+					f:      gScore + heuristic(neighborPos, rodent),
 					parent: current,
 				}
-				openSet[neighborPos] = neighborNode
+				openSet[*neighborPos] = neighborNode
 			}
 		}
 	}
