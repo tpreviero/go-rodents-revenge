@@ -6,6 +6,17 @@ import (
 	"time"
 )
 
+var catsPossivleMoves = []*Move{
+	{-1, -1},
+	{-1, 0},
+	{-1, 1},
+	{0, -1},
+	{0, 1},
+	{1, -1},
+	{1, 0},
+	{1, 1},
+}
+
 func (b *Board) updateCats() {
 	currentTime := time.Now()
 	if currentTime.Sub(b.LastCatUpdate) >= config.CatUpdateInterval {
@@ -50,21 +61,11 @@ func (b *Board) moveCatAt(cat *Position) {
 	}
 }
 
-func (b *Board) getPossibleMoves(cat *Position) []Move {
-	var moves []Move
-	directions := []Move{
-		{-1, -1},
-		{-1, 0},
-		{-1, 1},
-		{0, -1},
-		{0, 1},
-		{1, -1},
-		{1, 0},
-		{1, 1},
-	}
+func (b *Board) getPossibleMoves(cat *Position) []*Move {
+	var moves []*Move
 
-	for _, dir := range directions {
-		nextPosition := Position{Row: cat.Row + dir.Row, Column: cat.Column + dir.Column}
+	for _, dir := range catsPossivleMoves {
+		nextPosition := cat.after(dir)
 		if b.isWalkable(nextPosition) {
 			moves = append(moves, dir)
 		}
@@ -150,7 +151,7 @@ func (b *Board) aStarPathfinding(cat, rodent *Position) *Position {
 	return nil // No path found
 }
 
-func (b *Board) isWalkable(position Position) bool {
+func (b *Board) isWalkable(position *Position) bool {
 	if position.Row < 0 || position.Row >= len(b.Objects) || position.Column < 0 || position.Column >= len(b.Objects[0]) {
 		return false
 	}
@@ -158,7 +159,7 @@ func (b *Board) isWalkable(position Position) bool {
 	return b.Objects[position.Row][position.Column] == Empty || b.Objects[position.Row][position.Column] == Rodent
 }
 
-func (b *Board) minimizeDistance(cat, rodent *Position, possibleMoves []Move) *Position {
+func (b *Board) minimizeDistance(cat, rodent *Position, possibleMoves []*Move) *Position {
 	var nextPosition *Position
 	minDistance := math.MaxFloat64
 
@@ -166,9 +167,9 @@ func (b *Board) minimizeDistance(cat, rodent *Position, possibleMoves []Move) *P
 		distance := math.Abs(float64(cat.Row+move.Row-rodent.Row)) + math.Abs(float64(cat.Column+move.Column-rodent.Column))
 		if distance < minDistance {
 			minDistance = distance
-			candidate := Position{cat.Row + move.Row, cat.Column + move.Column}
+			candidate := cat.after(move)
 			if b.isWalkable(candidate) {
-				nextPosition = &candidate
+				nextPosition = candidate
 			}
 		}
 	}
