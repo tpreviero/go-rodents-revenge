@@ -88,7 +88,7 @@ func (b *Board) aStarPathfinding(cat, rodent *Position) *Position {
 	}
 
 	heuristic := func(a, b *Position) int {
-		return abs(a.Row-b.Row) + abs(a.Column-b.Column) // Manhattan Distance
+		return int(math.Max(math.Abs(float64(a.Row-b.Row)), math.Abs(float64(a.Column-b.Column))))
 	}
 
 	startNode := &node{pos: *cat, g: 0, h: heuristic(cat, rodent), f: heuristic(cat, rodent)}
