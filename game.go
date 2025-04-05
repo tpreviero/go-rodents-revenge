@@ -16,6 +16,8 @@ const (
 	Cat
 	CatResting
 	Cheese
+	SinkHole
+	SinkHoleRodent
 )
 
 type Position struct {
@@ -38,6 +40,7 @@ func (p *Position) after(move *Move) *Position {
 type Board struct {
 	Objects                [][]Object
 	LastCatUpdate          time.Time
+	InSinkHoleSince        time.Time
 	RemainingNumberOfWaves int
 }
 
@@ -114,6 +117,17 @@ var levelsToCustomization = map[int]BoardCustomization{
 		}
 		if rl.GetRandomValue(0, 100) < 45 {
 			return Obstacle
+		}
+		return Empty
+	},
+	3: func(position *Position) Object {
+		if position.Row > 1 && position.Row < 21 && position.Column > 1 && position.Column < 21 {
+			if rl.GetRandomValue(0, 100) < 2 {
+				return SinkHole
+			}
+			if (position.Row%2 == 1 && position.Column%2 == 0) || (position.Row%2 == 0 && position.Column%2 == 1) {
+				return Obstacle
+			}
 		}
 		return Empty
 	},

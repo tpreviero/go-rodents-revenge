@@ -8,6 +8,7 @@ type Config struct {
 	CatUpdateInterval time.Duration
 	DrawGrid          bool
 	CheesePoints      int
+	SinkHoleDuration  time.Duration
 }
 
 var config = &Config{
@@ -16,4 +17,5 @@ var config = &Config{
 	CatUpdateInterval: 1 * time.Second,
 	DrawGrid:          false,
 	CheesePoints:      100,
+	SinkHoleDuration:  10 * time.Second,
 }

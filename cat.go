@@ -174,7 +174,7 @@ func (b *Board) isWalkable(position *Position) bool {
 		return false
 	}
 
-	return b.Objects[position.Row][position.Column] == Empty || b.Objects[position.Row][position.Column] == Rodent
+	return b.at(position) == Empty || b.at(position) == Rodent || b.at(position) == SinkHoleRodent
 }
 
 func (b *Board) minimizeDistance(cat, rodent *Position, possibleMoves []*Move) *Position {

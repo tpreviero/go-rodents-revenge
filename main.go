@@ -2,6 +2,7 @@ package main
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"time"
 )
 
 func main() {
@@ -72,6 +73,24 @@ func (g *Game) move(position *Position, move *Move) bool {
 		b.set(position, Empty)
 		b.set(next, Rodent)
 		g.Points += config.CheesePoints
+		return true
+	}
+
+	if b.at(position) == Rodent && b.at(next) == SinkHole {
+		b.set(position, Empty)
+		b.set(next, SinkHoleRodent)
+		b.InSinkHoleSince = time.Now()
+		return false
+	}
+
+	if b.at(position) == SinkHoleRodent {
+		if time.Now().Sub(b.InSinkHoleSince) >= config.SinkHoleDuration {
+			b.set(position, Rodent)
+		}
+		return false
+	}
+
+	if b.at(position) == Obstacle && b.at(next) == SinkHole {
 		return true
 	}
 

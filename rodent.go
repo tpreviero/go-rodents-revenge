@@ -5,7 +5,7 @@ import rl "github.com/gen2brain/raylib-go/raylib"
 func (b *Board) findRodent() *Position {
 	for x, row := range b.Objects {
 		for y, obj := range row {
-			if obj == Rodent {
+			if obj == Rodent || obj == SinkHoleRodent {
 				return &Position{Row: x, Column: y}
 			}
 		}
