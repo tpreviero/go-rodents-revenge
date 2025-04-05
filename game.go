@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"math"
+	"time"
+)
 
 type Object int
 
@@ -32,8 +35,9 @@ func (p *Position) after(move *Move) *Position {
 }
 
 type Board struct {
-	Objects       [][]Object
-	LastCatUpdate time.Time
+	Objects                [][]Object
+	LastCatUpdate          time.Time
+	RemainingNumberOfWaves int
 }
 
 func (b *Board) at(p *Position) Object {
@@ -42,6 +46,10 @@ func (b *Board) at(p *Position) Object {
 
 func (b *Board) set(p *Position, object Object) {
 	b.Objects[p.Row][p.Column] = object
+}
+
+func (b *Board) distance(first, second *Position) float64 {
+	return math.Abs(float64(first.Row-second.Row)) + math.Abs(float64(first.Column-second.Column))
 }
 
 type GameState int
@@ -71,7 +79,8 @@ func newGame() *Game {
 
 func NewBoard() *Board {
 	board := &Board{
-		LastCatUpdate: time.Now(),
+		LastCatUpdate:          time.Now(),
+		RemainingNumberOfWaves: 3,
 	}
 
 	board.Objects = make([][]Object, 23)

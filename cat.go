@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 	"time"
 )
@@ -20,6 +21,12 @@ var catsPossibleMoves = []*Move{
 func (b *Board) updateCats() {
 	currentTime := time.Now()
 	if currentTime.Sub(b.LastCatUpdate) >= config.CatUpdateInterval {
+
+		cats := b.findAllCats()
+		if len(cats) == 0 && b.RemainingNumberOfWaves > 0 {
+			b.RemainingNumberOfWaves--
+			b.respawnCats()
+		}
 
 		b.transformTrappedCatsToCheese()
 		b.moveCats()
@@ -175,7 +182,7 @@ func (b *Board) minimizeDistance(cat, rodent *Position, possibleMoves []*Move) *
 	minDistance := math.MaxFloat64
 
 	for _, move := range possibleMoves {
-		distance := math.Abs(float64(cat.Row+move.Row-rodent.Row)) + math.Abs(float64(cat.Column+move.Column-rodent.Column))
+		distance := b.distance(cat.after(move), rodent)
 		if distance < minDistance {
 			minDistance = distance
 			candidate := cat.after(move)
@@ -197,4 +204,18 @@ func (b *Board) findAllCats() []*Position {
 		}
 	}
 	return catPositions
+}
+
+func (b *Board) respawnCats() {
+	for {
+		x := rl.GetRandomValue(1, 22)
+		y := rl.GetRandomValue(1, 22)
+		position := &Position{int(x), int(y)}
+		rodent := b.findRodent()
+
+		if b.at(position) == Empty && b.distance(position, rodent) > 5 {
+			b.set(position, Cat)
+			break
+		}
+	}
 }
