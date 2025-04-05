@@ -53,16 +53,18 @@ const (
 )
 
 type Game struct {
-	Board     *Board
-	GameState GameState
-	Points    int
+	Board          *Board
+	GameState      GameState
+	Points         int
+	RamainingLives int
 }
 
 func newGame() *Game {
 	return &Game{
-		Board:     NewBoard(),
-		GameState: Playing,
-		Points:    0,
+		Board:          NewBoard(),
+		GameState:      Playing,
+		Points:         0,
+		RamainingLives: 2,
 	}
 }
 
