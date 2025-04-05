@@ -16,7 +16,7 @@ func main() {
 		rl.ClearBackground(rl.RayWhite)
 
 		game.Update()
-		ui.Draw(game.Board)
+		ui.Draw(game)
 
 		rl.EndDrawing()
 	}

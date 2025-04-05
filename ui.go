@@ -13,27 +13,33 @@ func (ui *UI) Init() {
 	rl.InitWindow(int32(config.SquareSize*23), int32(config.SquareSize*23), "Go Rodent's Revenge")
 	rl.SetTargetFPS(60)
 
-	ui.rodentImage = rl.LoadTexture("assets/rodent.png")
-	ui.catImage = rl.LoadTexture("assets/cat.png")
-	ui.obstacleImage = rl.LoadTexture("assets/obstacle.png")
-	ui.wallImage = rl.LoadTexture("assets/wall.png")
+	ui.LoadTextures()
 }
 
 func (ui *UI) Close() {
 	rl.CloseWindow()
 }
 
-func (ui *UI) Draw(b *Board) {
-	for i := range b.Objects {
-		for j := range b.Objects[i] {
+func (ui *UI) LoadTextures() {
+	ui.rodentImage = rl.LoadTexture("assets/rodent.png")
+	ui.catImage = rl.LoadTexture("assets/cat.png")
+	ui.obstacleImage = rl.LoadTexture("assets/obstacle.png")
+	ui.wallImage = rl.LoadTexture("assets/wall.png")
+}
+
+func (ui *UI) Draw(g *Game) {
+	rl.DrawRectangle(0, 0, int32(config.SquareSize*23), int32(100), rl.LightGray)
+
+	for i := range g.Board.Objects {
+		for j := range g.Board.Objects[i] {
 			rl.DrawRectangle(int32(j*config.SquareSize), int32(i*config.SquareSize), int32(config.SquareSize), int32(config.SquareSize), rl.NewColor(195, 195, 0, 255))
-			if b.Objects[i][j] == Wall {
+			if g.Board.Objects[i][j] == Wall {
 				rl.DrawTexture(ui.wallImage, int32(j*config.SquareSize), int32(i*config.SquareSize), rl.White)
-			} else if b.Objects[i][j] == Obstacle {
+			} else if g.Board.Objects[i][j] == Obstacle {
 				rl.DrawTexture(ui.obstacleImage, int32(j*config.SquareSize), int32(i*config.SquareSize), rl.White)
-			} else if b.Objects[i][j] == Rodent {
+			} else if g.Board.Objects[i][j] == Rodent {
 				rl.DrawTexture(ui.rodentImage, int32(j*config.SquareSize), int32(i*config.SquareSize), rl.White)
-			} else if b.Objects[i][j] == Cat {
+			} else if g.Board.Objects[i][j] == Cat {
 				rl.DrawTexture(ui.catImage, int32(j*config.SquareSize), int32(i*config.SquareSize), rl.White)
 			}
 		}
