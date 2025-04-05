@@ -24,39 +24,41 @@ func (b *Board) updateCats() {
 		cats := b.findAllCats()
 
 		for _, cat := range cats {
-			b.moveCatAt(cat)
+			b.moveCat(cat)
 		}
 
 		b.LastCatUpdate = currentTime
 	}
-
 }
 
-func (b *Board) moveCatAt(cat *Position) {
+func (b *Board) moveCat(cat *Position) {
 	rodent := b.findRodent()
 
-	bestMove := b.aStarPathfinding(cat, rodent)
-	if bestMove != nil {
-		b.Objects[bestMove.Row][bestMove.Column] = Cat
-		b.Objects[cat.Row][cat.Column] = Empty
+	bestPosition := b.aStarPathfinding(cat, rodent)
+	if bestPosition != nil {
+		b.set(bestPosition, Cat)
+		b.set(cat, Empty)
 		fmt.Println("BEST")
 		return
 	}
 
 	possibleMoves := b.getPossibleMoves(cat)
-	bestLegalMove := b.minimizeDistance(cat, rodent, possibleMoves)
-	if bestLegalMove != nil {
-		b.Objects[bestLegalMove.Row][bestLegalMove.Column] = Cat
-		b.Objects[cat.Row][cat.Column] = Empty
+	bestLegalPosition := b.minimizeDistance(cat, rodent, possibleMoves)
+	if bestLegalPosition != nil {
+		b.set(bestLegalPosition, Cat)
+		b.set(cat, Empty)
 		fmt.Println("MINIMIZE")
 		return
 	}
 
 	if len(possibleMoves) > 0 {
 		firstMove := possibleMoves[0]
-		b.Objects[firstMove.Row][firstMove.Column] = Cat
-		b.Objects[cat.Row][cat.Column] = Empty
+		b.set(cat.after(firstMove), Cat)
+		b.set(cat, Empty)
 		fmt.Println("JUMPING AROUND")
+		return
+	} else {
+		b.set(cat, CatResting)
 		return
 	}
 }
@@ -169,7 +171,7 @@ func (b *Board) findAllCats() []*Position {
 	var catPositions []*Position
 	for x, row := range b.Objects {
 		for y, obj := range row {
-			if obj == Cat {
+			if obj == Cat || obj == CatResting {
 				catPositions = append(catPositions, &Position{Row: x, Column: y})
 			}
 		}

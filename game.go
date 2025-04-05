@@ -10,6 +10,7 @@ const (
 	Obstacle
 	Wall
 	Cat
+	CatResting
 	Cheese
 )
 

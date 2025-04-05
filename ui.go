@@ -7,11 +7,12 @@ import (
 )
 
 type UI struct {
-	rodentImage   rl.Texture2D
-	rodentLives   rl.Texture2D
-	catImage      rl.Texture2D
-	obstacleImage rl.Texture2D
-	wallImage     rl.Texture2D
+	rodent      rl.Texture2D
+	rodentLives rl.Texture2D
+	cat         rl.Texture2D
+	catResting  rl.Texture2D
+	obstacle    rl.Texture2D
+	wall        rl.Texture2D
 }
 
 func (ui *UI) Init() {
@@ -26,11 +27,12 @@ func (ui *UI) Close() {
 }
 
 func (ui *UI) LoadTextures() {
-	ui.rodentImage = rl.LoadTexture("assets/rodent.png")
+	ui.rodent = rl.LoadTexture("assets/rodent.png")
 	ui.rodentLives = rl.LoadTexture("assets/rodent-lives.png")
-	ui.catImage = rl.LoadTexture("assets/cat.png")
-	ui.obstacleImage = rl.LoadTexture("assets/obstacle.png")
-	ui.wallImage = rl.LoadTexture("assets/wall.png")
+	ui.cat = rl.LoadTexture("assets/cat.png")
+	ui.catResting = rl.LoadTexture("assets/cat-rest.png")
+	ui.obstacle = rl.LoadTexture("assets/obstacle.png")
+	ui.wall = rl.LoadTexture("assets/wall.png")
 }
 
 func (ui *UI) Draw(g *Game) {
@@ -49,13 +51,15 @@ func (ui *UI) Draw(g *Game) {
 		for j := range g.Board.Objects[i] {
 			rl.DrawRectangle(int32(j*config.SquareSize), offset+int32(i*config.SquareSize), int32(config.SquareSize), int32(config.SquareSize), rl.NewColor(195, 195, 0, 255))
 			if g.Board.Objects[i][j] == Wall {
-				rl.DrawTexture(ui.wallImage, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
+				rl.DrawTexture(ui.wall, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
 			} else if g.Board.Objects[i][j] == Obstacle {
-				rl.DrawTexture(ui.obstacleImage, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
+				rl.DrawTexture(ui.obstacle, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
 			} else if g.Board.Objects[i][j] == Rodent {
-				rl.DrawTexture(ui.rodentImage, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
+				rl.DrawTexture(ui.rodent, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
 			} else if g.Board.Objects[i][j] == Cat {
-				rl.DrawTexture(ui.catImage, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
+				rl.DrawTexture(ui.cat, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
+			} else if g.Board.Objects[i][j] == CatResting {
+				rl.DrawTexture(ui.catResting, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
 			}
 		}
 	}
