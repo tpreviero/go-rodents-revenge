@@ -75,7 +75,7 @@ func (g *Game) move(position *Position, move *Move) bool {
 		return false
 	}
 
-	if b.at(next) == Empty {
+	if b.at(next) == Empty || b.at(next) == Cheese {
 		b.set(next, b.at(position))
 		b.set(position, Empty)
 		return true
