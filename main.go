@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	game := newGame()
+	game := NewGame()
 
 	ui := &UI{}
 	ui.Init()
@@ -44,6 +44,10 @@ func (g *Game) Update() {
 
 		g.RamainingLives--
 		g.respawnRodent()
+	}
+
+	if len(g.Board.findAllCats()) == 0 && g.Board.RemainingNumberOfWaves == 0 {
+		g.NextLevel()
 	}
 
 	if g.GameState == Playing {

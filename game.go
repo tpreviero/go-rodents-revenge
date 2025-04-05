@@ -1,6 +1,7 @@
 package main
 
 import (
+	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 	"time"
 )
@@ -40,6 +41,8 @@ type Board struct {
 	RemainingNumberOfWaves int
 }
 
+type BoardCustomization func(position *Position) Object
+
 func (b *Board) at(p *Position) Object {
 	return b.Objects[p.Row][p.Column]
 }
@@ -66,24 +69,64 @@ type Game struct {
 	GameState      GameState
 	Points         int
 	RamainingLives int
+	CurrentLevel   int
 }
 
-func newGame() *Game {
+func (g *Game) NextLevel() {
+	g.CurrentLevel++
+	customization := levelsToCustomization[g.CurrentLevel]
+	if customization == nil {
+		g.GameState = Win
+		return
+	}
+	g.Board = NewBoard(customization)
+}
+
+func NewGame() *Game {
 	return &Game{
-		Board:          NewBoard(),
+		Board:          NewBoard(levelsToCustomization[0]),
 		GameState:      Playing,
 		Points:         0,
 		RamainingLives: 2,
+		CurrentLevel:   0,
 	}
 }
 
-func NewBoard() *Board {
+var levelsToCustomization = map[int]BoardCustomization{
+	0: func(position *Position) Object {
+		if position.Row >= 4 && position.Row <= 18 && position.Column >= 4 && position.Column <= 18 {
+			return Obstacle
+		}
+		return Empty
+	},
+	1: func(position *Position) Object {
+		if rl.GetRandomValue(0, 100) < 5 {
+			return Wall
+		}
+		if position.Row >= 4 && position.Row <= 18 && position.Column >= 4 && position.Column <= 18 {
+			return Obstacle
+		}
+		return Empty
+	},
+	2: func(position *Position) Object {
+		if rl.GetRandomValue(0, 100) < 5 {
+			return Wall
+		}
+		if rl.GetRandomValue(0, 100) < 45 {
+			return Obstacle
+		}
+		return Empty
+	},
+}
+
+func NewBoard(customization BoardCustomization) *Board {
 	board := &Board{
 		LastCatUpdate:          time.Now(),
-		RemainingNumberOfWaves: 3,
+		RemainingNumberOfWaves: 4,
 	}
 
 	board.Objects = make([][]Object, 23)
+
 	for i := range board.Objects {
 		board.Objects[i] = make([]Object, 23)
 		for j := range board.Objects[i] {
@@ -91,15 +134,11 @@ func NewBoard() *Board {
 				board.Objects[i][j] = Wall
 			} else if i == 11 && j == 11 {
 				board.Objects[i][j] = Rodent
-			} else if i >= 4 && i <= 18 && j >= 4 && j <= 18 {
-				board.Objects[i][j] = Obstacle
 			} else {
-				board.Objects[i][j] = Empty
+				board.Objects[i][j] = customization(&Position{Row: i, Column: j})
 			}
 		}
 	}
-
-	board.Objects[1][1] = Cat
 
 	return board
 }
