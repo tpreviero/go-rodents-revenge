@@ -7,6 +7,7 @@ type Config struct {
 	StatusBarHeight   int
 	CatUpdateInterval time.Duration
 	DrawGrid          bool
+	CheesePoints      int
 }
 
 var config = &Config{
@@ -14,4 +15,5 @@ var config = &Config{
 	StatusBarHeight:   3 * 34,
 	CatUpdateInterval: 1 * time.Second,
 	DrawGrid:          false,
+	CheesePoints:      100,
 }

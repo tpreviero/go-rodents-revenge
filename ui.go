@@ -11,6 +11,7 @@ type UI struct {
 	rodentLives rl.Texture2D
 	cat         rl.Texture2D
 	catResting  rl.Texture2D
+	cheese      rl.Texture2D
 	obstacle    rl.Texture2D
 	wall        rl.Texture2D
 }
@@ -31,6 +32,7 @@ func (ui *UI) LoadTextures() {
 	ui.rodentLives = rl.LoadTexture("assets/rodent-lives.png")
 	ui.cat = rl.LoadTexture("assets/cat.png")
 	ui.catResting = rl.LoadTexture("assets/cat-rest.png")
+	ui.cheese = rl.LoadTexture("assets/cheese.png")
 	ui.obstacle = rl.LoadTexture("assets/obstacle.png")
 	ui.wall = rl.LoadTexture("assets/wall.png")
 }
@@ -60,6 +62,8 @@ func (ui *UI) Draw(g *Game) {
 				rl.DrawTexture(ui.cat, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
 			} else if g.Board.Objects[i][j] == CatResting {
 				rl.DrawTexture(ui.catResting, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
+			} else if g.Board.Objects[i][j] == Cheese {
+				rl.DrawTexture(ui.cheese, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
 			}
 		}
 	}

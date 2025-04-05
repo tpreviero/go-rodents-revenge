@@ -43,16 +43,25 @@ func (g *Game) Update() {
 	if g.GameState == Playing {
 		move, ok := keyToMove[rl.GetKeyPressed()]
 		if ok {
-			g.Board.move(rodent, move)
+			g.move(rodent, move)
 		}
 	}
 }
 
-func (b *Board) move(position *Position, move *Move) bool {
+func (g *Game) move(position *Position, move *Move) bool {
 	next := position.after(move)
+
+	b := g.Board
 
 	if b.at(position) == Rodent && b.at(next) == Cat {
 		b.set(position, Empty)
+		return true
+	}
+
+	if b.at(position) == Rodent && b.at(next) == Cheese {
+		b.set(position, Empty)
+		b.set(next, Rodent)
+		g.Points += config.CheesePoints
 		return true
 	}
 
@@ -66,7 +75,7 @@ func (b *Board) move(position *Position, move *Move) bool {
 		return true
 	}
 
-	if b.move(next, move) {
+	if g.move(next, move) {
 		b.set(next, b.at(position))
 		b.set(position, Empty)
 		return true

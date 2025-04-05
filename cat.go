@@ -21,13 +21,33 @@ func (b *Board) updateCats() {
 	currentTime := time.Now()
 	if currentTime.Sub(b.LastCatUpdate) >= config.CatUpdateInterval {
 
-		cats := b.findAllCats()
-
-		for _, cat := range cats {
-			b.moveCat(cat)
-		}
+		b.transformTrappedCatsToCheese()
+		b.moveCats()
 
 		b.LastCatUpdate = currentTime
+	}
+}
+
+func (b *Board) moveCats() {
+	cats := b.findAllCats()
+	for _, cat := range cats {
+		b.moveCat(cat)
+	}
+}
+
+func (b *Board) transformTrappedCatsToCheese() {
+	cats := b.findAllCats()
+	allCatsResting := true
+	for _, cat := range cats {
+		if b.at(cat) != CatResting {
+			allCatsResting = false
+			break
+		}
+	}
+	if allCatsResting {
+		for _, cat := range cats {
+			b.set(cat, Cheese)
+		}
 	}
 }
 
