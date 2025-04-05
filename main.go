@@ -37,7 +37,13 @@ func (g *Game) Update() {
 	rodent := g.Board.findRodent()
 	if rodent == nil {
 		// the rodent has been eaten by a cat
-		g.GameState = GameOver
+		if g.RamainingLives == 0 {
+			g.GameState = GameOver
+			return
+		}
+
+		g.RamainingLives--
+		g.respawnRodent()
 	}
 
 	if g.GameState == Playing {
