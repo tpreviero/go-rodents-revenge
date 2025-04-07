@@ -23,13 +23,6 @@ func main() {
 	}
 }
 
-var keyToMove = map[int32]*Move{
-	rl.KeyUp:    {-1, 0},
-	rl.KeyDown:  {1, 0},
-	rl.KeyLeft:  {0, -1},
-	rl.KeyRight: {0, 1},
-}
-
 func (g *Game) Update() {
 	if g.GameState == Playing {
 		g.Board.updateCats()
@@ -52,10 +45,7 @@ func (g *Game) Update() {
 	}
 
 	if g.GameState == Playing {
-		move, ok := keyToMove[rl.GetKeyPressed()]
-		if ok {
-			g.move(rodent, move)
-		}
+		g.moveRodent()
 	}
 }
 
