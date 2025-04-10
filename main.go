@@ -8,8 +8,7 @@ import (
 func main() {
 	game := NewGame()
 
-	ui := &UI{}
-	ui.Init()
+	ui := NewUI()
 	defer ui.Close()
 
 	for !rl.WindowShouldClose() {

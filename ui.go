@@ -7,18 +7,19 @@ import (
 )
 
 type UI struct {
-	rodent         rl.Texture2D
-	rodentLives    rl.Texture2D
-	cat            rl.Texture2D
-	catResting     rl.Texture2D
-	cheese         rl.Texture2D
-	obstacle       rl.Texture2D
-	wall           rl.Texture2D
-	sinkHole       rl.Texture2D
-	sinkHoleRodent rl.Texture2D
+	gameTextures map[Object]rl.Texture2D
+	rodentLives  rl.Texture2D
 }
 
-func (ui *UI) Init() {
+func NewUI() *UI {
+	ui := UI{
+		gameTextures: map[Object]rl.Texture2D{},
+	}
+	ui.init()
+	return &ui
+}
+
+func (ui *UI) init() {
 	rl.InitWindow(int32(config.SquareSize*23), int32((config.SquareSize*23)+config.StatusBarHeight), "Go Rodent's Revenge")
 	rl.SetTargetFPS(60)
 
@@ -30,15 +31,17 @@ func (ui *UI) Close() {
 }
 
 func (ui *UI) LoadTextures() {
-	ui.rodent = rl.LoadTexture("assets/rodent.png")
+	ui.gameTextures[Rodent] = rl.LoadTexture("assets/rodent.png")
+	ui.gameTextures[Cat] = rl.LoadTexture("assets/cat.png")
+	ui.gameTextures[CatResting] = rl.LoadTexture("assets/cat-rest.png")
+	ui.gameTextures[Cheese] = rl.LoadTexture("assets/cheese.png")
+	ui.gameTextures[Obstacle] = rl.LoadTexture("assets/obstacle.png")
+	ui.gameTextures[Wall] = rl.LoadTexture("assets/wall.png")
+	ui.gameTextures[SinkHole] = rl.LoadTexture("assets/sinkhole.png")
+	ui.gameTextures[SinkHoleRodent] = rl.LoadTexture("assets/sinkhole-rodent.png")
+	ui.gameTextures[Trap] = rl.LoadTexture("assets/trap.png")
+
 	ui.rodentLives = rl.LoadTexture("assets/rodent-lives.png")
-	ui.cat = rl.LoadTexture("assets/cat.png")
-	ui.catResting = rl.LoadTexture("assets/cat-rest.png")
-	ui.cheese = rl.LoadTexture("assets/cheese.png")
-	ui.obstacle = rl.LoadTexture("assets/obstacle.png")
-	ui.wall = rl.LoadTexture("assets/wall.png")
-	ui.sinkHole = rl.LoadTexture("assets/sinkhole.png")
-	ui.sinkHoleRodent = rl.LoadTexture("assets/sinkhole-rodent.png")
 }
 
 func (ui *UI) Draw(g *Game) {
@@ -46,7 +49,8 @@ func (ui *UI) Draw(g *Game) {
 	rl.DrawRectangle(0, 0, int32(config.SquareSize*23), offset, rl.LightGray)
 
 	for i := range g.RamainingLives {
-		rl.DrawTexture(ui.rodentLives, int32(config.SquareSize+(i*config.SquareSize)), int32(config.SquareSize), rl.White)
+		//rl.DrawTexture(ui.rodentLives, int32(config.SquareSize+(i*config.SquareSize)), int32(config.SquareSize), rl.White)
+		rl.DrawTextureEx(ui.rodentLives, rl.NewVector2(float32(config.SquareSize+(i*config.SquareSize)), float32(config.SquareSize)), 0, float32(config.SquareSize)/float32(ui.rodentLives.Width), rl.White)
 	}
 
 	text := strconv.Itoa(g.Points)
@@ -56,23 +60,7 @@ func (ui *UI) Draw(g *Game) {
 	for i := range g.Board.Objects {
 		for j := range g.Board.Objects[i] {
 			rl.DrawRectangle(int32(j*config.SquareSize), offset+int32(i*config.SquareSize), int32(config.SquareSize), int32(config.SquareSize), rl.NewColor(195, 195, 0, 255))
-			if g.Board.Objects[i][j] == Wall {
-				rl.DrawTexture(ui.wall, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
-			} else if g.Board.Objects[i][j] == Obstacle {
-				rl.DrawTexture(ui.obstacle, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
-			} else if g.Board.Objects[i][j] == Rodent {
-				rl.DrawTexture(ui.rodent, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
-			} else if g.Board.Objects[i][j] == Cat {
-				rl.DrawTexture(ui.cat, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
-			} else if g.Board.Objects[i][j] == CatResting {
-				rl.DrawTexture(ui.catResting, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
-			} else if g.Board.Objects[i][j] == Cheese {
-				rl.DrawTexture(ui.cheese, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
-			} else if g.Board.Objects[i][j] == SinkHole {
-				rl.DrawTexture(ui.sinkHole, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
-			} else if g.Board.Objects[i][j] == SinkHoleRodent {
-				rl.DrawTexture(ui.sinkHoleRodent, int32(j*config.SquareSize), offset+int32(i*config.SquareSize), rl.White)
-			}
+			rl.DrawTextureEx(ui.gameTextures[g.Board.Objects[i][j]], rl.NewVector2(float32(j*config.SquareSize), float32(offset+int32(i*config.SquareSize))), 0, float32(config.SquareSize)/float32(ui.gameTextures[g.Board.Objects[i][j]].Width), rl.White)
 		}
 	}
 	if config.DrawGrid {

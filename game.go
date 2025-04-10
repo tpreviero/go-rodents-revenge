@@ -18,6 +18,7 @@ const (
 	Cheese
 	SinkHole
 	SinkHoleRodent
+	Trap
 )
 
 type Position struct {
@@ -87,7 +88,7 @@ func (g *Game) NextLevel() {
 
 func NewGame() *Game {
 	return &Game{
-		Board:          NewBoard(levelsToCustomization[0]),
+		Board:          NewBoard(levelsToCustomization[6]),
 		GameState:      Playing,
 		Points:         0,
 		RamainingLives: 2,
@@ -128,6 +129,44 @@ var levelsToCustomization = map[int]BoardCustomization{
 			if (position.Row%2 == 1 && position.Column%2 == 0) || (position.Row%2 == 0 && position.Column%2 == 1) {
 				return Obstacle
 			}
+		}
+		return Empty
+	},
+	4: func(position *Position) Object {
+		if rl.GetRandomValue(0, 100) < 5 {
+			return Wall
+		}
+		if rl.GetRandomValue(0, 100) < 5 {
+			return SinkHole
+		}
+		if rl.GetRandomValue(0, 100) < 45 {
+			return Obstacle
+		}
+		return Empty
+	},
+	5: func(position *Position) Object {
+		if position.Row > 3 && position.Row < 19 && position.Column > 3 && position.Column < 19 {
+			if (position.Row%2 == 1 && position.Column%2 == 0) || (position.Row%2 == 0 && position.Column%2 == 1) {
+				return Wall
+			}
+		}
+		if rl.GetRandomValue(0, 100) < 5 {
+			return SinkHole
+		}
+		if rl.GetRandomValue(0, 100) < 25 {
+			return Obstacle
+		}
+		return Empty
+	},
+	6: func(position *Position) Object {
+		if position.Row >= 4 && position.Row <= 18 && position.Column >= 4 && position.Column <= 18 {
+			if rl.GetRandomValue(0, 100) < 5 {
+				return SinkHole
+			}
+			return Obstacle
+		}
+		if rl.GetRandomValue(0, 100) == 0 {
+			return Trap
 		}
 		return Empty
 	},
