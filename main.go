@@ -99,6 +99,10 @@ func (g *Game) move(position *Position, move *Move) bool {
 		return true
 	}
 
+	if b.at(position) == Cat && b.at(next) == SinkHole {
+		return false
+	}
+
 	if b.at(next) == Wall {
 		return false
 	}
