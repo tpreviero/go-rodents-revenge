@@ -1,19 +1,26 @@
 package main
 
 import (
-	"strconv"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"strconv"
 )
+
+type Animation struct {
+	texture      rl.Texture2D
+	frameCounter int
+}
 
 type UI struct {
 	gameTextures map[Object]rl.Texture2D
+	animations   map[Position]*Animation
+	rodentEaten  rl.Texture2D
 	rodentLives  rl.Texture2D
 }
 
 func NewUI() *UI {
 	ui := UI{
 		gameTextures: map[Object]rl.Texture2D{},
+		animations:   map[Position]*Animation{},
 	}
 	ui.init()
 	return &ui
@@ -32,24 +39,32 @@ func (ui *UI) Close() {
 
 func (ui *UI) LoadTextures() {
 	ui.gameTextures[Rodent] = rl.LoadTexture("assets/rodent.png")
+	ui.gameTextures[RodentSinkHole] = rl.LoadTexture("assets/sinkhole-rodent.png")
 	ui.gameTextures[Cat] = rl.LoadTexture("assets/cat.png")
 	ui.gameTextures[CatResting] = rl.LoadTexture("assets/cat-rest.png")
 	ui.gameTextures[Cheese] = rl.LoadTexture("assets/cheese.png")
 	ui.gameTextures[Obstacle] = rl.LoadTexture("assets/obstacle.png")
 	ui.gameTextures[Wall] = rl.LoadTexture("assets/wall.png")
 	ui.gameTextures[SinkHole] = rl.LoadTexture("assets/sinkhole.png")
-	ui.gameTextures[SinkHoleRodent] = rl.LoadTexture("assets/sinkhole-rodent.png")
 	ui.gameTextures[Trap] = rl.LoadTexture("assets/trap.png")
 
 	ui.rodentLives = rl.LoadTexture("assets/rodent-lives.png")
+	ui.rodentEaten = rl.LoadTexture("assets/rodent-eaten.png")
 }
 
 func (ui *UI) Draw(g *Game) {
+
+	for i := range g.Board.rodentEaten {
+		ui.animations[*g.Board.rodentEaten[i]] = &Animation{
+			texture: ui.rodentEaten,
+		}
+	}
+	g.Board.rodentEaten = make([]*Position, 0)
+
 	var offset = int32(config.StatusBarHeight)
 	rl.DrawRectangle(0, 0, int32(config.SquareSize*23), offset, rl.LightGray)
 
-	for i := range g.RamainingLives {
-		//rl.DrawTexture(ui.rodentLives, int32(config.SquareSize+(i*config.SquareSize)), int32(config.SquareSize), rl.White)
+	for i := range g.RemainingLives {
 		rl.DrawTextureEx(ui.rodentLives, rl.NewVector2(float32(config.SquareSize+(i*config.SquareSize)), float32(config.SquareSize)), 0, float32(config.SquareSize)/float32(ui.rodentLives.Width), rl.White)
 	}
 
@@ -60,7 +75,17 @@ func (ui *UI) Draw(g *Game) {
 	for i := range g.Board.Objects {
 		for j := range g.Board.Objects[i] {
 			rl.DrawRectangle(int32(j*config.SquareSize), offset+int32(i*config.SquareSize), int32(config.SquareSize), int32(config.SquareSize), rl.NewColor(195, 195, 0, 255))
-			rl.DrawTextureEx(ui.gameTextures[g.Board.Objects[i][j]], rl.NewVector2(float32(j*config.SquareSize), float32(offset+int32(i*config.SquareSize))), 0, float32(config.SquareSize)/float32(ui.gameTextures[g.Board.Objects[i][j]].Width), rl.White)
+
+			animation := ui.animations[Position{Row: i, Column: j}]
+			if animation != nil {
+				if animation.Finished() {
+					ui.animations[Position{Row: i, Column: j}] = nil
+				} else {
+					animation.Draw(Position{Row: i, Column: j})
+				}
+			} else {
+				rl.DrawTextureEx(ui.gameTextures[g.Board.Objects[i][j]], rl.NewVector2(float32(j*config.SquareSize), float32(offset+int32(i*config.SquareSize))), 0, float32(config.SquareSize)/float32(ui.gameTextures[g.Board.Objects[i][j]].Width), rl.White)
+			}
 		}
 	}
 	if config.DrawGrid {
@@ -108,4 +133,22 @@ func drawGrid() {
 			rl.LightGray,
 		)
 	}
+}
+
+func (a *Animation) Finished() bool {
+	frameCount := a.texture.Width / int32(config.TextureSquareSize)
+	currentFrame := (a.frameCounter / 10) % int(frameCount)
+	return a.frameCounter > int((frameCount-1)*10) && currentFrame == 0
+}
+
+func (a *Animation) Draw(p Position) {
+	frameCount := a.texture.Width / int32(config.TextureSquareSize)
+	currentFrame := (a.frameCounter / 10) % int(frameCount)
+
+	var offset = int32(config.StatusBarHeight)
+	frameRect := rl.NewRectangle(float32(currentFrame*config.TextureSquareSize), 0, float32(config.TextureSquareSize), float32(config.TextureSquareSize))
+	destRect := rl.NewRectangle(float32(p.Column*config.SquareSize), float32(offset+int32(p.Row*config.SquareSize)), float32(config.SquareSize), float32(config.SquareSize))
+	rl.DrawTexturePro(a.texture, frameRect, destRect, rl.Vector2{}, 0, rl.White)
+
+	a.frameCounter++
 }

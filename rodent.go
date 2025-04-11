@@ -27,7 +27,7 @@ func (g *Game) moveRodent() {
 func (b *Board) findRodent() *Position {
 	for x, row := range b.Objects {
 		for y, obj := range row {
-			if obj == Rodent || obj == SinkHoleRodent {
+			if obj == Rodent || obj == RodentSinkHole {
 				return &Position{Row: x, Column: y}
 			}
 		}

@@ -23,8 +23,8 @@ func (b *Board) updateCats() {
 	if currentTime.Sub(b.LastCatUpdate) >= config.CatUpdateInterval {
 
 		cats := b.findAllCats()
-		if len(cats) == 0 && b.RemainingNumberOfWaves > 0 {
-			b.RemainingNumberOfWaves--
+		if len(cats) == 0 && b.RemainingWaves > 0 {
+			b.RemainingWaves--
 			b.respawnCats()
 		}
 
@@ -63,6 +63,9 @@ func (b *Board) moveCat(cat *Position) {
 
 	bestPosition := b.aStarPathfinding(cat, rodent)
 	if bestPosition != nil {
+		if b.at(bestPosition) == Rodent {
+			b.rodentEaten = append(b.rodentEaten, bestPosition)
+		}
 		b.set(bestPosition, Cat)
 		b.set(cat, Empty)
 		fmt.Println("BEST")
@@ -100,13 +103,6 @@ func (b *Board) getPossibleMoves(cat *Position) []*Move {
 		}
 	}
 	return moves
-}
-
-func abs(x int) int {
-	if x < 0 {
-		return -x
-	}
-	return x
 }
 
 func (b *Board) aStarPathfinding(cat, rodent *Position) *Position {
@@ -174,7 +170,7 @@ func (b *Board) isWalkable(position *Position) bool {
 		return false
 	}
 
-	return b.at(position) == Empty || b.at(position) == Rodent || b.at(position) == SinkHoleRodent
+	return b.at(position) == Empty || b.at(position) == Rodent || b.at(position) == RodentSinkHole
 }
 
 func (b *Board) minimizeDistance(cat, rodent *Position, possibleMoves []*Move) *Position {

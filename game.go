@@ -11,13 +11,13 @@ type Object int
 const (
 	Empty Object = iota
 	Rodent
+	RodentSinkHole
 	Obstacle
 	Wall
 	Cat
 	CatResting
 	Cheese
 	SinkHole
-	SinkHoleRodent
 	Trap
 )
 
@@ -39,10 +39,11 @@ func (p *Position) after(move *Move) *Position {
 }
 
 type Board struct {
-	Objects                [][]Object
-	LastCatUpdate          time.Time
-	InSinkHoleSince        time.Time
-	RemainingNumberOfWaves int
+	Objects         [][]Object
+	LastCatUpdate   time.Time
+	InSinkHoleSince time.Time
+	RemainingWaves  int
+	rodentEaten     []*Position
 }
 
 type BoardCustomization func(position *Position) Object
@@ -72,7 +73,7 @@ type Game struct {
 	Board          *Board
 	GameState      GameState
 	Points         int
-	RamainingLives int
+	RemainingLives int
 	CurrentLevel   int
 }
 
@@ -100,7 +101,7 @@ func NewGame() *Game {
 		Board:          NewBoard(levelsToCustomization[0]),
 		GameState:      Playing,
 		Points:         0,
-		RamainingLives: 2,
+		RemainingLives: 2,
 		CurrentLevel:   0,
 	}
 }
@@ -183,8 +184,9 @@ var levelsToCustomization = map[int]BoardCustomization{
 
 func NewBoard(customization BoardCustomization) *Board {
 	board := &Board{
-		LastCatUpdate:          time.Now(),
-		RemainingNumberOfWaves: 4,
+		LastCatUpdate:  time.Now(),
+		RemainingWaves: 4,
+		rodentEaten:    make([]*Position, 0),
 	}
 
 	board.Objects = make([][]Object, 23)

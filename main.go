@@ -39,16 +39,16 @@ func (g *Game) Update() {
 	rodent := g.Board.findRodent()
 	if rodent == nil {
 		// the rodent has been eaten by a cat
-		if g.RamainingLives == 0 {
+		if g.RemainingLives == 0 {
 			g.GameState = GameOver
 			return
 		}
 
-		g.RamainingLives--
+		g.RemainingLives--
 		g.respawnRodent()
 	}
 
-	if len(g.Board.findAllCats()) == 0 && g.Board.RemainingNumberOfWaves == 0 {
+	if len(g.Board.findAllCats()) == 0 && g.Board.RemainingWaves == 0 {
 		g.NextLevel()
 	}
 
@@ -76,12 +76,12 @@ func (g *Game) move(position *Position, move *Move) bool {
 
 	if b.at(position) == Rodent && b.at(next) == SinkHole {
 		b.set(position, Empty)
-		b.set(next, SinkHoleRodent)
+		b.set(next, RodentSinkHole)
 		b.InSinkHoleSince = time.Now()
 		return false
 	}
 
-	if b.at(position) == SinkHoleRodent {
+	if b.at(position) == RodentSinkHole {
 		if time.Now().Sub(b.InSinkHoleSince) >= config.SinkHoleDuration {
 			b.set(position, Rodent)
 		}
