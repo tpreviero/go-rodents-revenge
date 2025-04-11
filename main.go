@@ -74,6 +74,13 @@ func (g *Game) move(position *Position, move *Move) bool {
 		return true
 	}
 
+	if b.at(position) == Rodent && b.at(next) == Trap {
+		b.set(position, Empty)
+		b.set(next, Empty)
+		g.Board.rodentDeath = append(g.Board.rodentDeath, next)
+		return false
+	}
+
 	if b.at(position) == Rodent && b.at(next) == SinkHole {
 		b.set(position, Empty)
 		b.set(next, RodentSinkHole)

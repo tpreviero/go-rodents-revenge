@@ -43,7 +43,7 @@ type Board struct {
 	LastCatUpdate   time.Time
 	InSinkHoleSince time.Time
 	RemainingWaves  int
-	rodentEaten     []*Position
+	rodentDeath     []*Position
 }
 
 type BoardCustomization func(position *Position) Object
@@ -186,7 +186,7 @@ func NewBoard(customization BoardCustomization) *Board {
 	board := &Board{
 		LastCatUpdate:  time.Now(),
 		RemainingWaves: 4,
-		rodentEaten:    make([]*Position, 0),
+		rodentDeath:    make([]*Position, 0),
 	}
 
 	board.Objects = make([][]Object, 23)

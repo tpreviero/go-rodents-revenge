@@ -13,7 +13,7 @@ type Animation struct {
 type UI struct {
 	gameTextures map[Object]rl.Texture2D
 	animations   map[Position]*Animation
-	rodentEaten  rl.Texture2D
+	rodentDeath  rl.Texture2D
 	rodentLives  rl.Texture2D
 }
 
@@ -49,17 +49,17 @@ func (ui *UI) LoadTextures() {
 	ui.gameTextures[Trap] = rl.LoadTexture("assets/trap.png")
 
 	ui.rodentLives = rl.LoadTexture("assets/rodent-lives.png")
-	ui.rodentEaten = rl.LoadTexture("assets/rodent-eaten.png")
+	ui.rodentDeath = rl.LoadTexture("assets/rodent-death.png")
 }
 
 func (ui *UI) Draw(g *Game) {
 
-	for i := range g.Board.rodentEaten {
-		ui.animations[*g.Board.rodentEaten[i]] = &Animation{
-			texture: ui.rodentEaten,
+	for i := range g.Board.rodentDeath {
+		ui.animations[*g.Board.rodentDeath[i]] = &Animation{
+			texture: ui.rodentDeath,
 		}
 	}
-	g.Board.rodentEaten = make([]*Position, 0)
+	g.Board.rodentDeath = make([]*Position, 0)
 
 	var offset = int32(config.StatusBarHeight)
 	rl.DrawRectangle(0, 0, int32(config.SquareSize*23), offset, rl.LightGray)

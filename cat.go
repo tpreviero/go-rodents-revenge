@@ -64,7 +64,7 @@ func (b *Board) moveCat(cat *Position) {
 	bestPosition := b.aStarPathfinding(cat, rodent)
 	if bestPosition != nil {
 		if b.at(bestPosition) == Rodent {
-			b.rodentEaten = append(b.rodentEaten, bestPosition)
+			b.rodentDeath = append(b.rodentDeath, bestPosition)
 		}
 		b.set(bestPosition, Cat)
 		b.set(cat, Empty)
