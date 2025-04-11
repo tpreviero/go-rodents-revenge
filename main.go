@@ -23,6 +23,15 @@ func main() {
 }
 
 func (g *Game) Update() {
+	if rl.IsKeyDown(rl.KeyRightShift) && rl.IsKeyPressed(rl.KeyRight) {
+		g.NextLevel()
+		return
+	}
+	if rl.IsKeyDown(rl.KeyRightShift) && rl.IsKeyPressed(rl.KeyLeft) {
+		g.PreviousLevel()
+		return
+	}
+
 	if g.GameState == Playing {
 		g.Board.updateCats()
 	}

@@ -76,6 +76,15 @@ type Game struct {
 	CurrentLevel   int
 }
 
+func (g *Game) PreviousLevel() {
+	if g.CurrentLevel > 0 {
+		g.CurrentLevel--
+		customization := levelsToCustomization[g.CurrentLevel]
+		g.GameState = Playing
+		g.Board = NewBoard(customization)
+	}
+}
+
 func (g *Game) NextLevel() {
 	g.CurrentLevel++
 	customization := levelsToCustomization[g.CurrentLevel]
@@ -88,7 +97,7 @@ func (g *Game) NextLevel() {
 
 func NewGame() *Game {
 	return &Game{
-		Board:          NewBoard(levelsToCustomization[6]),
+		Board:          NewBoard(levelsToCustomization[0]),
 		GameState:      Playing,
 		Points:         0,
 		RamainingLives: 2,
@@ -159,10 +168,10 @@ var levelsToCustomization = map[int]BoardCustomization{
 		return Empty
 	},
 	6: func(position *Position) Object {
+		if rl.GetRandomValue(0, 100) < 5 {
+			return SinkHole
+		}
 		if position.Row >= 4 && position.Row <= 18 && position.Column >= 4 && position.Column <= 18 {
-			if rl.GetRandomValue(0, 100) < 5 {
-				return SinkHole
-			}
 			return Obstacle
 		}
 		if rl.GetRandomValue(0, 100) == 0 {
