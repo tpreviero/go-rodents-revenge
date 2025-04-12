@@ -56,7 +56,7 @@ func (b *Board) moveCat(cat *Position) {
 
 	bestPosition := b.aStarPathfinding(cat, rodent)
 	if bestPosition != nil {
-		if b.at(bestPosition) == Rodent {
+		if b.at(bestPosition) == Rodent || b.at(bestPosition) == RodentSinkHole {
 			b.rodentDeath = append(b.rodentDeath, bestPosition)
 		}
 		b.set(bestPosition, Cat)
