@@ -46,6 +46,16 @@ type Board struct {
 	rodentDeath     []*Position
 }
 
+type GameSpeed int
+
+const (
+	Snail GameSpeed = iota
+	Slow
+	Medium
+	Fast
+	Blazing
+)
+
 type BoardCustomization func(position *Position) Object
 
 func (b *Board) at(p *Position) Object {
@@ -75,6 +85,7 @@ type Game struct {
 	Points         int
 	RemainingLives int
 	CurrentLevel   int
+	GameSpeed      GameSpeed
 }
 
 func (g *Game) PreviousLevel() {
@@ -96,6 +107,10 @@ func (g *Game) NextLevel() {
 	g.Board = NewBoard(customization)
 }
 
+func (g *Game) catUpdateInterval() time.Duration {
+	return config.CatUpdateIntervals[g.GameSpeed]
+}
+
 func NewGame() *Game {
 	return &Game{
 		Board:          NewBoard(levelsToCustomization[0]),
@@ -103,6 +118,7 @@ func NewGame() *Game {
 		Points:         0,
 		RemainingLives: 2,
 		CurrentLevel:   0,
+		GameSpeed:      Slow,
 	}
 }
 

@@ -31,9 +31,25 @@ func (g *Game) Update() {
 		g.PreviousLevel()
 		return
 	}
+	if rl.IsKeyDown(rl.KeyRightShift) && rl.IsKeyPressed(rl.KeyUp) {
+		if g.GameSpeed < Blazing {
+			g.GameSpeed++
+		}
+		return
+	}
+	if rl.IsKeyDown(rl.KeyRightShift) && rl.IsKeyPressed(rl.KeyDown) {
+		if g.GameSpeed > Snail {
+			g.GameSpeed--
+		}
+		return
+	}
 
 	if g.GameState == Playing {
-		g.Board.updateCats()
+		currentTime := time.Now()
+		if currentTime.Sub(g.Board.LastCatUpdate) >= g.catUpdateInterval() {
+			g.Board.updateCats()
+			g.Board.LastCatUpdate = currentTime
+		}
 	}
 
 	rodent := g.Board.findRodent()

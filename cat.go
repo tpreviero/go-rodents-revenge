@@ -4,7 +4,6 @@ import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
-	"time"
 )
 
 var catsPossibleMoves = []*Move{
@@ -19,20 +18,14 @@ var catsPossibleMoves = []*Move{
 }
 
 func (b *Board) updateCats() {
-	currentTime := time.Now()
-	if currentTime.Sub(b.LastCatUpdate) >= config.CatUpdateInterval {
-
-		cats := b.findAllCats()
-		if len(cats) == 0 && b.RemainingWaves > 0 {
-			b.RemainingWaves--
-			b.respawnCats()
-		}
-
-		b.transformTrappedCatsToCheese()
-		b.moveCats()
-
-		b.LastCatUpdate = currentTime
+	cats := b.findAllCats()
+	if len(cats) == 0 && b.RemainingWaves > 0 {
+		b.RemainingWaves--
+		b.respawnCats()
 	}
+
+	b.transformTrappedCatsToCheese()
+	b.moveCats()
 }
 
 func (b *Board) moveCats() {
