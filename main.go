@@ -122,6 +122,10 @@ func (g *Game) move(position *Position, move *Move) bool {
 		return true
 	}
 
+	if b.at(position) == Obstacle && b.at(next) == Trap {
+		return false
+	}
+
 	if b.at(position) == Cat && b.at(next) == SinkHole {
 		return false
 	}
