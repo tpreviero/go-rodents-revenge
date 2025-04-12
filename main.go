@@ -23,6 +23,13 @@ func main() {
 }
 
 func (g *Game) Update() {
+	if rl.IsKeyPressed(rl.KeyP) {
+		if g.GameState == Pause {
+			g.GameState = Playing
+		} else {
+			g.GameState = Pause
+		}
+	}
 	if rl.IsKeyDown(rl.KeyRightShift) && rl.IsKeyPressed(rl.KeyRight) {
 		g.NextLevel()
 		return

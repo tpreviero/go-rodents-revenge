@@ -115,6 +115,18 @@ func (ui *UI) Draw(g *Game) {
 		rl.DrawRectangle(x, y, boxWidth, boxHeight, rl.White)
 		rl.DrawText(text, x+10, y+5, int32(config.SquareSize), rl.Black)
 	}
+
+	if g.GameState == Pause {
+		text := "Paused. Press P to continue."
+		textWidth := rl.MeasureText(text, int32(config.SquareSize))
+		boxWidth := textWidth + 20
+		boxHeight := int32(config.SquareSize) + 10
+		x := int32((config.SquareSize*23)/2) - boxWidth/2
+		y := int32((23*config.SquareSize)/2) - boxHeight/2
+
+		rl.DrawRectangle(x, y, boxWidth, boxHeight, rl.White)
+		rl.DrawText(text, x+10, y+5, int32(config.SquareSize), rl.Black)
+	}
 }
 
 func drawGrid() {
