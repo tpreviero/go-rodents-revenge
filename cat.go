@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"math"
 )
@@ -61,7 +60,6 @@ func (b *Board) moveCat(cat *Position) {
 		}
 		b.set(bestPosition, Cat)
 		b.set(cat, Empty)
-		fmt.Println("BEST")
 		return
 	}
 
@@ -70,7 +68,6 @@ func (b *Board) moveCat(cat *Position) {
 	if bestLegalPosition != nil {
 		b.set(bestLegalPosition, Cat)
 		b.set(cat, Empty)
-		fmt.Println("MINIMIZE")
 		return
 	}
 
@@ -78,7 +75,6 @@ func (b *Board) moveCat(cat *Position) {
 		firstMove := possibleMoves[0]
 		b.set(cat.after(firstMove), Cat)
 		b.set(cat, Empty)
-		fmt.Println("JUMPING AROUND")
 		return
 	} else {
 		b.set(cat, CatResting)
