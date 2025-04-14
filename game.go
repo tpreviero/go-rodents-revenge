@@ -31,6 +31,14 @@ type Move struct {
 	Column int
 }
 
+func (p *Move) compose(other *Move) *Move {
+	return &Move{
+		Row:    p.Row + other.Row,
+		Column: p.Column + other.Column,
+	}
+
+}
+
 func (p *Position) after(move *Move) *Position {
 	return &Position{
 		Row:    p.Row + move.Row,

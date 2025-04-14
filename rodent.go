@@ -18,10 +18,17 @@ var keyToMove = map[int32]*Move{
 }
 
 func (g *Game) moveRodent() {
-	move, ok := keyToMove[rl.GetKeyPressed()]
-	if ok {
-		g.move(g.Board.findRodent(), move)
+	resultingMove := &Move{0, 0}
+	for key, move := range keyToMove {
+		if rl.IsKeyPressed(key) {
+			resultingMove = resultingMove.compose(move)
+		}
 	}
+
+	if resultingMove.Row == 0 && resultingMove.Column == 0 {
+		return
+	}
+	g.move(g.Board.findRodent(), resultingMove)
 }
 
 func (b *Board) findRodent() *Position {
