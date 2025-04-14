@@ -1,8 +1,16 @@
 
+# Go, Rodent's Revenge!
+This is a simple clone of the classic game [Rodent's Revenge](https://en.wikipedia.org/wiki/Rodent%27s_Revenge), where you play as a mouse trying to trap cats in a maze.
+The game is written in Go and uses [raylib](https://github.com/gen2brain/raylib-go).
+
+Obviously <u>**I do not own the rights to the original game**</u>, but I wanted to try and recreate it in Go as a fun project.
+
+![Game play](./assets/game.png)
+
 # What's next
-- [x] Game over screen if the cat catches the rodent
-- [ ] Add the respawning of the cats 1->2->2->1
-- [ ] Add the levels to the game
-- [x] Top bar with lives and score
+- [ ] Include assets as part of the game binary
+- [ ] Implement balls of purple yarn
+- [ ] Add a pattern (or randomness?) to the respawning of the cats. The original game seems to be using the pattern 1->2->2->1
+- [ ] Add an intro/help screen to display the instructions and the controls
+- [ ] Add remaining levels of the game
 - [ ] Add time to the top bar
-- [x] Add logic for trapped cats: if at least a cat is not trapped, the trapped cats a shown as resting
