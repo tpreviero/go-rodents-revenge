@@ -15,6 +15,10 @@ func main() {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 
+		if rl.IsKeyDown(rl.KeyRightShift) && rl.IsKeyPressed(rl.KeySlash) {
+			ui.showHelp = !ui.showHelp
+		}
+
 		game.Update()
 		ui.Draw(game)
 

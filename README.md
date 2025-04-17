@@ -14,6 +14,7 @@ Obviously <u>**I do not own the rights to the original game**</u>, but I wanted 
 - `Right Shift + DOWN`: Decrease difficulty (speeds up the cats)
 - `Right Shift + RIGHT`: Skip to the next level
 - `Right Shift + LEFT`: Go back to the previous level
+- `?`: Show the help screen
 
 ## What's next
 - [ ] Include assets as part of the game binary

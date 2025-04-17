@@ -3,6 +3,7 @@ package main
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"strconv"
+	"strings"
 )
 
 type Animation struct {
@@ -15,6 +16,7 @@ type UI struct {
 	animations   map[Position]*Animation
 	rodentDeath  rl.Texture2D
 	rodentLives  rl.Texture2D
+	showHelp     bool
 }
 
 func NewUI() *UI {
@@ -68,13 +70,17 @@ func (ui *UI) Draw(g *Game) {
 		rl.DrawTextureEx(ui.rodentLives, rl.NewVector2(float32(config.SquareSize+(i*config.SquareSize)), float32(config.SquareSize)), 0, float32(config.SquareSize)/float32(ui.rodentLives.Width), rl.White)
 	}
 
-	text := "Score: " + strconv.Itoa(g.Points)
-	textWidth := rl.MeasureText(text, int32(config.SquareSize))
-	rl.DrawText(text, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize), int32(config.SquareSize), rl.Black)
-
 	level := "Level: " + strconv.Itoa(g.CurrentLevel+1)
-	textWidth = rl.MeasureText(level, int32(config.SquareSize))
+	textWidth := rl.MeasureText(level, int32(config.SquareSize))
 	rl.DrawText(level, int32(config.SquareSize*22)-textWidth, 0, int32(config.SquareSize), rl.Black)
+
+	score := "Score: " + strconv.Itoa(g.Points)
+	textWidth = rl.MeasureText(score, int32(config.SquareSize))
+	rl.DrawText(score, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize), int32(config.SquareSize), rl.Black)
+
+	help := "? for help"
+	textWidth = rl.MeasureText(help, int32(config.SquareSize))
+	rl.DrawText(help, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize*2), int32(config.SquareSize), rl.Black)
 
 	for i := range g.Board.Objects {
 		for j := range g.Board.Objects[i] {
@@ -97,27 +103,43 @@ func (ui *UI) Draw(g *Game) {
 	}
 
 	if g.GameState == GameOver {
-		ui.displayText("Game Over")
+		ui.displayText("Game Over", config.SquareSize)
 	}
 
 	if g.GameState == Win {
-		ui.displayText("You win!")
+		ui.displayText("You win!", config.SquareSize)
 	}
 
 	if g.GameState == Pause {
-		ui.displayText("Paused. Press P to continue.")
+		ui.displayText("Paused. Press P to continue.", config.SquareSize)
+	}
+
+	if ui.showHelp {
+		ui.displayText("Arrow keys: Move the rodent (8 directions)\n"+
+			"P: Pause the game\n"+
+			"Right Shift + UP: Increase difficulty (speeds up the cats)\n"+
+			"Right Shift + DOWN: Decrease difficulty (speeds up the cats)\n"+
+			"Right Shift + RIGHT: Skip to the next level\n"+
+			"Right Shift + LEFT: Go back to the previous level\n"+
+			"?: Toggle this help screen\n"+
+			"ESC: Quit the game",
+			config.SquareSize/2)
 	}
 }
 
-func (ui *UI) displayText(text string) {
-	textWidth := rl.MeasureText(text, int32(config.SquareSize))
+func (ui *UI) displayText(text string, fontSize int) {
+	textWidth := rl.MeasureText(text, int32(fontSize))
 	boxWidth := textWidth + 20
-	boxHeight := int32(config.SquareSize) + 10
+	lines := strings.Count(text, "\n")
+	boxHeight := int32(fontSize+(fontSize*lines)) + 10
+	if lines > 1 {
+		boxHeight += 10
+	}
 	x := int32((config.SquareSize*23)/2) - boxWidth/2
 	y := int32((23*config.SquareSize)/2) - boxHeight/2
 
 	rl.DrawRectangle(x, y, boxWidth, boxHeight, rl.White)
-	rl.DrawText(text, x+10, y+5, int32(config.SquareSize), rl.Black)
+	rl.DrawText(text, x+10, y+5, int32(fontSize), rl.Black)
 }
 
 func drawGrid() {
