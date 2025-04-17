@@ -93,40 +93,27 @@ func (ui *UI) Draw(g *Game) {
 	}
 
 	if g.GameState == GameOver {
-		text := "Game Over"
-		textWidth := rl.MeasureText(text, int32(config.SquareSize))
-		boxWidth := textWidth + 20
-		boxHeight := int32(config.SquareSize) + 10
-		x := int32((config.SquareSize*23)/2) - boxWidth/2
-		y := int32((23*config.SquareSize)/2) - boxHeight/2
-
-		rl.DrawRectangle(x, y, boxWidth, boxHeight, rl.White)
-		rl.DrawText(text, x+10, y+5, int32(config.SquareSize), rl.Black)
+		ui.displayText("Game Over")
 	}
 
 	if g.GameState == Win {
-		text := "You win!"
-		textWidth := rl.MeasureText(text, int32(config.SquareSize))
-		boxWidth := textWidth + 20
-		boxHeight := int32(config.SquareSize) + 10
-		x := int32((config.SquareSize*23)/2) - boxWidth/2
-		y := int32((23*config.SquareSize)/2) - boxHeight/2
-
-		rl.DrawRectangle(x, y, boxWidth, boxHeight, rl.White)
-		rl.DrawText(text, x+10, y+5, int32(config.SquareSize), rl.Black)
+		ui.displayText("You win!")
 	}
 
 	if g.GameState == Pause {
-		text := "Paused. Press P to continue."
-		textWidth := rl.MeasureText(text, int32(config.SquareSize))
-		boxWidth := textWidth + 20
-		boxHeight := int32(config.SquareSize) + 10
-		x := int32((config.SquareSize*23)/2) - boxWidth/2
-		y := int32((23*config.SquareSize)/2) - boxHeight/2
-
-		rl.DrawRectangle(x, y, boxWidth, boxHeight, rl.White)
-		rl.DrawText(text, x+10, y+5, int32(config.SquareSize), rl.Black)
+		ui.displayText("Paused. Press P to continue.")
 	}
+}
+
+func (ui *UI) displayText(text string) {
+	textWidth := rl.MeasureText(text, int32(config.SquareSize))
+	boxWidth := textWidth + 20
+	boxHeight := int32(config.SquareSize) + 10
+	x := int32((config.SquareSize*23)/2) - boxWidth/2
+	y := int32((23*config.SquareSize)/2) - boxHeight/2
+
+	rl.DrawRectangle(x, y, boxWidth, boxHeight, rl.White)
+	rl.DrawText(text, x+10, y+5, int32(config.SquareSize), rl.Black)
 }
 
 func drawGrid() {
