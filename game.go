@@ -64,6 +64,10 @@ const (
 	Blazing
 )
 
+func (gs GameSpeed) String() string {
+	return [...]string{"Snail", "Slow", "Medium", "Fast", "Blazing"}[gs]
+}
+
 type BoardCustomization func(position *Position) Object
 
 func (b *Board) at(p *Position) Object {

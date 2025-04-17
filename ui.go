@@ -71,16 +71,20 @@ func (ui *UI) Draw(g *Game) {
 	}
 
 	level := "Level: " + strconv.Itoa(g.CurrentLevel+1)
-	textWidth := rl.MeasureText(level, int32(config.SquareSize))
-	rl.DrawText(level, int32(config.SquareSize*22)-textWidth, 0, int32(config.SquareSize), rl.Black)
+	textWidth := rl.MeasureText(level, int32(config.SquareSize/2))
+	rl.DrawText(level, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize/2), int32(config.SquareSize/2), rl.Black)
 
 	score := "Score: " + strconv.Itoa(g.Points)
-	textWidth = rl.MeasureText(score, int32(config.SquareSize))
-	rl.DrawText(score, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize), int32(config.SquareSize), rl.Black)
+	textWidth = rl.MeasureText(score, int32(config.SquareSize/2))
+	rl.DrawText(score, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize), int32(config.SquareSize/2), rl.Black)
+
+	difficulty := "Difficulty: " + g.GameSpeed.String()
+	textWidth = rl.MeasureText(difficulty, int32(config.SquareSize/2))
+	rl.DrawText(difficulty, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize/2*3), int32(config.SquareSize/2), rl.Black)
 
 	help := "? for help"
-	textWidth = rl.MeasureText(help, int32(config.SquareSize))
-	rl.DrawText(help, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize*2), int32(config.SquareSize), rl.Black)
+	textWidth = rl.MeasureText(help, int32(config.SquareSize/2))
+	rl.DrawText(help, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize*2), int32(config.SquareSize/2), rl.Black)
 
 	for i := range g.Board.Objects {
 		for j := range g.Board.Objects[i] {
