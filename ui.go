@@ -27,7 +27,7 @@ func NewUI() *UI {
 }
 
 func (ui *UI) init() {
-	rl.InitWindow(int32(config.SquareSize*23), int32((config.SquareSize*23)+config.StatusBarHeight), "Go Rodent's Revenge")
+	rl.InitWindow(int32(config.SquareSize*23), int32((config.SquareSize*23)+config.StatusBarHeight), "Go, Rodent's Revenge!")
 	rl.SetTargetFPS(60)
 
 	ui.LoadTextures()
