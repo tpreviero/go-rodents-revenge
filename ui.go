@@ -68,9 +68,13 @@ func (ui *UI) Draw(g *Game) {
 		rl.DrawTextureEx(ui.rodentLives, rl.NewVector2(float32(config.SquareSize+(i*config.SquareSize)), float32(config.SquareSize)), 0, float32(config.SquareSize)/float32(ui.rodentLives.Width), rl.White)
 	}
 
-	text := strconv.Itoa(g.Points)
+	text := "Score: " + strconv.Itoa(g.Points)
 	textWidth := rl.MeasureText(text, int32(config.SquareSize))
 	rl.DrawText(text, int32(config.SquareSize*22)-textWidth, int32(config.SquareSize), int32(config.SquareSize), rl.Black)
+
+	level := "Level: " + strconv.Itoa(g.CurrentLevel+1)
+	textWidth = rl.MeasureText(level, int32(config.SquareSize))
+	rl.DrawText(level, int32(config.SquareSize*22)-textWidth, 0, int32(config.SquareSize), rl.Black)
 
 	for i := range g.Board.Objects {
 		for j := range g.Board.Objects[i] {
