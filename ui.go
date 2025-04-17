@@ -16,6 +16,7 @@ type UI struct {
 	animations   map[Position]*Animation
 	rodentDeath  rl.Texture2D
 	rodentLives  rl.Texture2D
+	clock        rl.Texture2D
 	showHelp     bool
 }
 
@@ -52,6 +53,7 @@ func (ui *UI) LoadTextures() {
 
 	ui.rodentLives = rl.LoadTexture("assets/rodent-lives.png")
 	ui.rodentDeath = rl.LoadTexture("assets/rodent-death.png")
+	ui.clock = rl.LoadTexture("assets/clock.png")
 }
 
 func (ui *UI) Draw(g *Game) {
@@ -69,6 +71,9 @@ func (ui *UI) Draw(g *Game) {
 	for i := range g.RemainingLives {
 		rl.DrawTextureEx(ui.rodentLives, rl.NewVector2(float32(config.SquareSize+(i*config.SquareSize)), float32(config.SquareSize)), 0, float32(config.SquareSize)/float32(ui.rodentLives.Width), rl.White)
 	}
+
+	x := int32((config.SquareSize*23)/2 - config.SquareSize)
+	rl.DrawTextureEx(ui.clock, rl.NewVector2(float32(x), float32(config.SquareSize/2)), 0, float32(config.SquareSize*2)/float32(ui.clock.Height), rl.White)
 
 	level := "Level: " + strconv.Itoa(g.CurrentLevel+1)
 	textWidth := rl.MeasureText(level, int32(config.SquareSize/2))
