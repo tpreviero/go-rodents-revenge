@@ -1,10 +1,15 @@
 package main
 
 import (
+	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"strconv"
 	"strings"
+	"unsafe"
 )
+
+// #include "assets.h"
+import "C"
 
 type Animation struct {
 	texture      rl.Texture2D
@@ -41,19 +46,50 @@ func (ui *UI) Close() {
 }
 
 func (ui *UI) LoadTextures() {
-	ui.gameTextures[Rodent] = rl.LoadTexture("assets/rodent.png")
-	ui.gameTextures[RodentSinkHole] = rl.LoadTexture("assets/sinkhole-rodent.png")
-	ui.gameTextures[Cat] = rl.LoadTexture("assets/cat.png")
-	ui.gameTextures[CatResting] = rl.LoadTexture("assets/cat-rest.png")
-	ui.gameTextures[Cheese] = rl.LoadTexture("assets/cheese.png")
-	ui.gameTextures[Obstacle] = rl.LoadTexture("assets/obstacle.png")
-	ui.gameTextures[Wall] = rl.LoadTexture("assets/wall.png")
-	ui.gameTextures[SinkHole] = rl.LoadTexture("assets/sinkhole.png")
-	ui.gameTextures[Trap] = rl.LoadTexture("assets/trap.png")
+	ui.gameTextures[Rodent] = ui.LoadTexture(Rodent.textureData())
+	ui.gameTextures[RodentSinkHole] = ui.LoadTexture(RodentSinkHole.textureData())
+	ui.gameTextures[Cat] = ui.LoadTexture(Cat.textureData())
+	ui.gameTextures[CatResting] = ui.LoadTexture(CatResting.textureData())
+	ui.gameTextures[Cheese] = ui.LoadTexture(Cheese.textureData())
+	ui.gameTextures[Obstacle] = ui.LoadTexture(Obstacle.textureData())
+	ui.gameTextures[Wall] = ui.LoadTexture(Wall.textureData())
+	ui.gameTextures[SinkHole] = ui.LoadTexture(SinkHole.textureData())
+	ui.gameTextures[Trap] = ui.LoadTexture(Trap.textureData())
 
-	ui.rodentLives = rl.LoadTexture("assets/rodent-lives.png")
-	ui.rodentDeath = rl.LoadTexture("assets/rodent-death.png")
-	ui.clock = rl.LoadTexture("assets/clock.png")
+	ui.rodentLives = ui.LoadTexture(C.GoBytes(unsafe.Pointer(&(C.assets_rodent_lives_png[0])), C.int(C.assets_rodent_lives_png_len)))
+	ui.rodentDeath = ui.LoadTexture(C.GoBytes(unsafe.Pointer(&(C.assets_rodent_death_png[0])), C.int(C.assets_rodent_death_png_len)))
+	ui.clock = ui.LoadTexture(C.GoBytes(unsafe.Pointer(&(C.assets_clock_png[0])), C.int(C.assets_clock_png_len)))
+}
+
+func (o Object) textureData() []byte {
+	switch o {
+	case Rodent:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_rodent_png[0])), C.int(C.assets_rodent_png_len))
+	case RodentSinkHole:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_sinkhole_rodent_png[0])), C.int(C.assets_sinkhole_rodent_png_len))
+	case Cat:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_cat_png[0])), C.int(C.assets_cat_png_len))
+	case CatResting:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_cat_rest_png[0])), C.int(C.assets_cat_rest_png_len))
+	case Cheese:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_cheese_png[0])), C.int(C.assets_cheese_png_len))
+	case Obstacle:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_obstacle_png[0])), C.int(C.assets_obstacle_png_len))
+	case Wall:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_wall_png[0])), C.int(C.assets_wall_png_len))
+	case SinkHole:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_sinkhole_png[0])), C.int(C.assets_sinkhole_png_len))
+	case Trap:
+		return C.GoBytes(unsafe.Pointer(&(C.assets_trap_png[0])), C.int(C.assets_trap_png_len))
+	default:
+		panic(fmt.Sprintf("could not find texture textureData for object %d", o))
+	}
+}
+
+func (ui *UI) LoadTexture(data []byte) rl.Texture2D {
+	image := rl.LoadImageFromMemory(".png", data, int32(len(data)))
+	defer rl.UnloadImage(image)
+	return rl.LoadTextureFromImage(image)
 }
 
 func (ui *UI) Draw(g *Game) {
