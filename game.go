@@ -11,6 +11,7 @@ type Object int
 const (
 	Empty Object = iota
 	Rodent
+	AnotherRodent
 	RodentSinkHole
 	Obstacle
 	Wall
@@ -224,8 +225,10 @@ func NewBoard(customization BoardCustomization) *Board {
 		for j := range board.Objects[i] {
 			if i == 0 || i == 22 || j == 0 || j == 22 {
 				board.Objects[i][j] = Wall
-			} else if i == 11 && j == 11 {
+			} else if i == 11 && j == 10 {
 				board.Objects[i][j] = Rodent
+			} else if i == 11 && j == 12 {
+				board.Objects[i][j] = AnotherRodent
 			} else {
 				board.Objects[i][j] = customization(&Position{Row: i, Column: j})
 			}

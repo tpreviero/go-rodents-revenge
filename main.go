@@ -90,26 +90,26 @@ func (g *Game) move(position *Position, move *Move) bool {
 
 	b := g.Board
 
-	if b.at(position) == Rodent && b.at(next) == Cat {
+	if (b.at(position) == Rodent || b.at(position) == AnotherRodent) && b.at(next) == Cat {
 		b.set(position, Empty)
 		return true
 	}
 
-	if b.at(position) == Rodent && b.at(next) == Cheese {
+	if (b.at(position) == Rodent || b.at(position) == AnotherRodent) && b.at(next) == Cheese {
 		b.set(position, Empty)
 		b.set(next, Rodent)
 		g.Points += config.CheesePoints
 		return true
 	}
 
-	if b.at(position) == Rodent && b.at(next) == Trap {
+	if (b.at(position) == Rodent || b.at(position) == AnotherRodent) && b.at(next) == Trap {
 		b.set(position, Empty)
 		b.set(next, Empty)
 		g.Board.rodentDeath = append(g.Board.rodentDeath, next)
 		return false
 	}
 
-	if b.at(position) == Rodent && b.at(next) == SinkHole {
+	if (b.at(position) == Rodent || b.at(position) == AnotherRodent) && b.at(next) == SinkHole {
 		b.set(position, Empty)
 		b.set(next, RodentSinkHole)
 		b.InSinkHoleSince = time.Now()
