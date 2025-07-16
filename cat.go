@@ -52,6 +52,7 @@ func (b *Board) transformTrappedCatsToCheese() {
 
 func (b *Board) moveCat(cat *Position) {
 	rodent := b.findRodent()
+	//anotherRodent := b.findAnotherRodent()
 
 	bestPosition := b.aStarPathfinding(cat, rodent)
 	if bestPosition != nil {
