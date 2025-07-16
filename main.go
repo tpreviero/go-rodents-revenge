@@ -65,7 +65,8 @@ func (g *Game) Update() {
 	}
 
 	rodent := g.Board.findRodent()
-	if rodent == nil {
+	anotherRodent := g.Board.findAnotherRodent()
+	if rodent == nil || anotherRodent == nil {
 		// the rodent has been eaten by a cat
 		if g.RemainingLives == 0 {
 			g.GameState = GameOver
@@ -73,7 +74,11 @@ func (g *Game) Update() {
 		}
 
 		g.RemainingLives--
-		g.respawnRodent()
+		if rodent == nil {
+			g.respawnRodent()
+		} else {
+			g.respawnAnotherRodent()
+		}
 	}
 
 	if len(g.Board.findAllCats()) == 0 && g.Board.RemainingWaves == 0 {

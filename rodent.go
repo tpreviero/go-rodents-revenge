@@ -87,3 +87,16 @@ func (g *Game) respawnRodent() {
 		}
 	}
 }
+
+func (g *Game) respawnAnotherRodent() {
+	for {
+		x := rl.GetRandomValue(1, 22)
+		y := rl.GetRandomValue(1, 22)
+		position := &Position{int(x), int(y)}
+
+		if g.Board.at(position) == Empty {
+			g.Board.set(position, AnotherRodent)
+			break
+		}
+	}
+}
