@@ -216,8 +216,9 @@ func (b *Board) respawnCats() {
 		y := rl.GetRandomValue(1, 22)
 		position := &Position{int(x), int(y)}
 		rodent := b.findRodent()
+		anotherRodent := b.findAnotherRodent()
 
-		if b.at(position) == Empty && b.distance(position, rodent) > 5 {
+		if b.at(position) == Empty && b.distance(position, rodent) > 5 && b.distance(position, anotherRodent) > 5 {
 			b.set(position, Cat)
 			break
 		}
