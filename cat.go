@@ -77,6 +77,17 @@ func (b *Board) moveCat(cat *Position) {
 		return
 	}
 
+	if bestPositionRodent != nil && bestPositionAnotherRodent != nil {
+		// both rodents are reachable
+		if b.distance(bestPositionRodent, rodent) <= b.distance(bestPositionAnotherRodent, anotherRodent) {
+			b.set(bestPositionRodent, Cat)
+		} else {
+			b.set(bestPositionAnotherRodent, Cat)
+		}
+		b.set(cat, Empty)
+		return
+	}
+
 	possibleMoves := b.getPossibleMoves(cat)
 	var bestLegalPosition *Position
 	if b.distance(cat, rodent) <= b.distance(cat, anotherRodent) {
