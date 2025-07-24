@@ -100,9 +100,16 @@ func (g *Game) move(position *Position, move *Move) bool {
 		return true
 	}
 
-	if (b.at(position) == Rodent || b.at(position) == AnotherRodent) && b.at(next) == Cheese {
+	if b.at(position) == Rodent && b.at(next) == Cheese {
 		b.set(position, Empty)
 		b.set(next, Rodent)
+		g.Points += config.CheesePoints
+		return true
+	}
+
+	if b.at(position) == AnotherRodent && b.at(next) == Cheese {
+		b.set(position, Empty)
+		b.set(next, AnotherRodent)
 		g.Points += config.CheesePoints
 		return true
 	}
