@@ -69,7 +69,7 @@ func (b *Board) moveCat(cat *Position) {
 
 	if bestPositionRodent == nil && bestPositionAnotherRodent != nil {
 		// only a path to another rodent
-		if b.at(bestPositionAnotherRodent) == AnotherRodent || b.at(bestPositionAnotherRodent) == RodentSinkHole {
+		if b.at(bestPositionAnotherRodent) == AnotherRodent || b.at(bestPositionAnotherRodent) == AnotherRodentSinkHole {
 			b.rodentDeath = append(b.rodentDeath, bestPositionAnotherRodent)
 		}
 		b.set(bestPositionAnotherRodent, Cat)
@@ -178,7 +178,7 @@ func (b *Board) isWalkable(position *Position) bool {
 		return false
 	}
 
-	return b.at(position) == Empty || (b.at(position) == Rodent || b.at(position) == AnotherRodent) || b.at(position) == RodentSinkHole
+	return b.at(position) == Empty || (b.at(position) == Rodent || b.at(position) == AnotherRodent) || (b.at(position) == RodentSinkHole || b.at(position) == AnotherRodentSinkHole)
 }
 
 func (b *Board) minimizeDistance(cat, rodent *Position, possibleMoves []*Move) *Position {

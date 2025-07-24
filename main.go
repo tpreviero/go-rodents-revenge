@@ -121,16 +121,30 @@ func (g *Game) move(position *Position, move *Move) bool {
 		return false
 	}
 
-	if (b.at(position) == Rodent || b.at(position) == AnotherRodent) && b.at(next) == SinkHole {
+	if b.at(position) == Rodent && b.at(next) == SinkHole {
 		b.set(position, Empty)
 		b.set(next, RodentSinkHole)
-		b.InSinkHoleSince = time.Now()
+		b.RodentInSinkHoleSince = time.Now()
+		return false
+	}
+
+	if b.at(position) == AnotherRodent && b.at(next) == SinkHole {
+		b.set(position, Empty)
+		b.set(next, AnotherRodentSinkHole)
+		b.AnotherRodentInSinkHoleSince = time.Now()
 		return false
 	}
 
 	if b.at(position) == RodentSinkHole {
-		if time.Now().Sub(b.InSinkHoleSince) >= config.SinkHoleDuration {
+		if time.Now().Sub(b.RodentInSinkHoleSince) >= config.SinkHoleDuration {
 			b.set(position, Rodent)
+		}
+		return false
+	}
+
+	if b.at(position) == AnotherRodentSinkHole {
+		if time.Now().Sub(b.AnotherRodentInSinkHoleSince) >= config.SinkHoleDuration {
+			b.set(position, AnotherRodent)
 		}
 		return false
 	}

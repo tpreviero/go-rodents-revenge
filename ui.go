@@ -49,6 +49,7 @@ func (ui *UI) LoadTextures() {
 	ui.gameTextures[Rodent] = ui.LoadTexture(Rodent.textureData())
 	ui.gameTextures[AnotherRodent] = ui.LoadTexture(Rodent.textureData())
 	ui.gameTextures[RodentSinkHole] = ui.LoadTexture(RodentSinkHole.textureData())
+	ui.gameTextures[AnotherRodentSinkHole] = ui.LoadTexture(RodentSinkHole.textureData())
 	ui.gameTextures[Cat] = ui.LoadTexture(Cat.textureData())
 	ui.gameTextures[CatResting] = ui.LoadTexture(CatResting.textureData())
 	ui.gameTextures[Cheese] = ui.LoadTexture(Cheese.textureData())
@@ -65,8 +66,6 @@ func (ui *UI) LoadTextures() {
 func (o Object) textureData() []byte {
 	switch o {
 	case Rodent:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_rodent_png[0])), C.int(C.assets_rodent_png_len))
-	case AnotherRodent:
 		return C.GoBytes(unsafe.Pointer(&(C.assets_rodent_png[0])), C.int(C.assets_rodent_png_len))
 	case RodentSinkHole:
 		return C.GoBytes(unsafe.Pointer(&(C.assets_sinkhole_rodent_png[0])), C.int(C.assets_sinkhole_rodent_png_len))

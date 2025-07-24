@@ -13,6 +13,7 @@ const (
 	Rodent
 	AnotherRodent
 	RodentSinkHole
+	AnotherRodentSinkHole
 	Obstacle
 	Wall
 	Cat
@@ -48,11 +49,12 @@ func (p *Position) after(move *Move) *Position {
 }
 
 type Board struct {
-	Objects         [][]Object
-	LastCatUpdate   time.Time
-	InSinkHoleSince time.Time
-	RemainingWaves  int
-	rodentDeath     []*Position
+	Objects                      [][]Object
+	LastCatUpdate                time.Time
+	RodentInSinkHoleSince        time.Time
+	AnotherRodentInSinkHoleSince time.Time
+	RemainingWaves               int
+	rodentDeath                  []*Position
 }
 
 type GameSpeed int

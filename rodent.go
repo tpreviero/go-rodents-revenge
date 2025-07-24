@@ -66,7 +66,7 @@ func (b *Board) findRodent() *Position {
 func (b *Board) findAnotherRodent() *Position {
 	for x, row := range b.Objects {
 		for y, obj := range row {
-			if obj == AnotherRodent || obj == RodentSinkHole {
+			if obj == AnotherRodent || obj == AnotherRodentSinkHole {
 				return &Position{Row: x, Column: y}
 			}
 		}
