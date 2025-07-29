@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	game := NewGame()
+	game := NewGame(SinglePlayer)
 
 	ui := NewUI()
 	defer ui.Close()
@@ -56,6 +56,17 @@ func (g *Game) Update() {
 		return
 	}
 
+	if rl.IsKeyDown(rl.KeyRightShift) && rl.IsKeyPressed(rl.KeyM) {
+		if g.GameType == SinglePlayer {
+			g.RemainingLives++
+			g.GameType = Cooperative
+		} else {
+			g.GameType = SinglePlayer
+			anotherRodent := g.Board.findAnotherRodent()
+			g.Board.set(anotherRodent, Empty)
+		}
+	}
+
 	if g.GameState == Playing {
 		currentTime := time.Now()
 		if currentTime.Sub(g.Board.LastCatUpdate) >= g.catUpdateInterval() {
@@ -65,8 +76,7 @@ func (g *Game) Update() {
 	}
 
 	rodent := g.Board.findRodent()
-	anotherRodent := g.Board.findAnotherRodent()
-	if rodent == nil || anotherRodent == nil {
+	if rodent == nil {
 		// the rodent has been eaten by a cat
 		if g.RemainingLives == 0 {
 			g.GameState = GameOver
@@ -74,11 +84,19 @@ func (g *Game) Update() {
 		}
 
 		g.RemainingLives--
-		if rodent == nil {
-			g.respawnRodent()
-		} else {
-			g.respawnAnotherRodent()
+		g.respawnRodent()
+	}
+
+	anotherRodent := g.Board.findAnotherRodent()
+	if g.GameType == Cooperative && anotherRodent == nil {
+		// the another rodent has been eaten by a cat
+		if g.RemainingLives == 0 {
+			g.GameState = GameOver
+			return
 		}
+
+		g.RemainingLives--
+		g.respawnAnotherRodent()
 	}
 
 	if len(g.Board.findAllCats()) == 0 && g.Board.RemainingWaves == 0 {

@@ -168,6 +168,7 @@ func (ui *UI) Draw(g *Game) {
 			"Right Shift + DOWN: Decrease difficulty (speeds up the cats)\n"+
 			"Right Shift + RIGHT: Skip to the next level\n"+
 			"Right Shift + LEFT: Go back to the previous level\n"+
+			"Right Shift + M: Switch to between single player and cooperative game\n"+
 			"?: Toggle this help screen\n"+
 			"ESC: Quit the game",
 			config.SquareSize/2)

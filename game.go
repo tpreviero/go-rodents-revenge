@@ -94,9 +94,17 @@ const (
 	Win
 )
 
+type GameType int
+
+const (
+	SinglePlayer GameType = iota
+	Cooperative
+)
+
 type Game struct {
 	Board          *Board
 	GameState      GameState
+	GameType       GameType
 	Points         int
 	RemainingLives int
 	CurrentLevel   int
@@ -108,7 +116,7 @@ func (g *Game) PreviousLevel() {
 		g.CurrentLevel--
 		customization := levelsToCustomization[g.CurrentLevel]
 		g.GameState = Playing
-		g.Board = NewBoard(customization)
+		g.Board = NewBoard(g.GameType, customization)
 	}
 }
 
@@ -119,17 +127,18 @@ func (g *Game) NextLevel() {
 		g.GameState = Win
 		return
 	}
-	g.Board = NewBoard(customization)
+	g.Board = NewBoard(g.GameType, customization)
 }
 
 func (g *Game) catUpdateInterval() time.Duration {
 	return config.CatUpdateIntervals[g.GameSpeed]
 }
 
-func NewGame() *Game {
+func NewGame(gameType GameType) *Game {
 	return &Game{
-		Board:          NewBoard(levelsToCustomization[0]),
+		Board:          NewBoard(gameType, levelsToCustomization[0]),
 		GameState:      Playing,
+		GameType:       gameType,
 		Points:         0,
 		RemainingLives: 2,
 		CurrentLevel:   0,
@@ -213,7 +222,7 @@ var levelsToCustomization = map[int]BoardCustomization{
 	},
 }
 
-func NewBoard(customization BoardCustomization) *Board {
+func NewBoard(gameType GameType, customization BoardCustomization) *Board {
 	board := &Board{
 		LastCatUpdate:  time.Now(),
 		RemainingWaves: 4,
@@ -227,9 +236,11 @@ func NewBoard(customization BoardCustomization) *Board {
 		for j := range board.Objects[i] {
 			if i == 0 || i == 22 || j == 0 || j == 22 {
 				board.Objects[i][j] = Wall
-			} else if i == 11 && j == 10 {
+			} else if gameType == SinglePlayer && i == 11 && j == 11 {
 				board.Objects[i][j] = Rodent
-			} else if i == 11 && j == 12 {
+			} else if gameType == Cooperative && i == 11 && j == 10 {
+				board.Objects[i][j] = Rodent
+			} else if gameType == Cooperative && i == 11 && j == 12 {
 				board.Objects[i][j] = AnotherRodent
 			} else {
 				board.Objects[i][j] = customization(&Position{Row: i, Column: j})

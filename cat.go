@@ -55,7 +55,10 @@ func (b *Board) moveCat(cat *Position) {
 	anotherRodent := b.findAnotherRodent()
 
 	bestPositionRodent := b.aStarPathfinding(cat, rodent)
-	bestPositionAnotherRodent := b.aStarPathfinding(cat, anotherRodent)
+	var bestPositionAnotherRodent *Position
+	if anotherRodent != nil {
+		bestPositionAnotherRodent = b.aStarPathfinding(cat, anotherRodent)
+	}
 
 	if bestPositionRodent != nil && bestPositionAnotherRodent == nil {
 		// only a path to the rodent
@@ -90,11 +93,18 @@ func (b *Board) moveCat(cat *Position) {
 
 	possibleMoves := b.getPossibleMoves(cat)
 	var bestLegalPosition *Position
-	if b.distance(cat, rodent) <= b.distance(cat, anotherRodent) {
+	if rodent != nil && anotherRodent != nil {
+		if b.distance(cat, rodent) <= b.distance(cat, anotherRodent) {
+			bestLegalPosition = b.minimizeDistance(cat, rodent, possibleMoves)
+		} else {
+			bestLegalPosition = b.minimizeDistance(cat, anotherRodent, possibleMoves)
+		}
+	} else if rodent != nil {
 		bestLegalPosition = b.minimizeDistance(cat, rodent, possibleMoves)
-	} else {
+	} else if anotherRodent != nil {
 		bestLegalPosition = b.minimizeDistance(cat, anotherRodent, possibleMoves)
 	}
+
 	if bestLegalPosition != nil {
 		b.set(bestLegalPosition, Cat)
 		b.set(cat, Empty)
@@ -226,10 +236,11 @@ func (b *Board) respawnCats() {
 		x := rl.GetRandomValue(1, 22)
 		y := rl.GetRandomValue(1, 22)
 		position := &Position{int(x), int(y)}
+
 		rodent := b.findRodent()
 		anotherRodent := b.findAnotherRodent()
 
-		if b.at(position) == Empty && b.distance(position, rodent) > 5 && b.distance(position, anotherRodent) > 5 {
+		if b.at(position) == Empty && (rodent == nil || b.distance(position, rodent) > 5) && (anotherRodent == nil || b.distance(position, anotherRodent) > 5) {
 			b.set(position, Cat)
 			break
 		}
