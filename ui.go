@@ -141,7 +141,7 @@ func (ui *UI) Draw(g *Game) {
 					animation.Draw(Position{Row: i, Column: j})
 				}
 			} else {
-				rl.DrawTextureEx(ui.gameTextures[g.Board.Objects[i][j]], rl.NewVector2(float32(j*config.SquareSize), float32(offset+int32(i*config.SquareSize))), 0, float32(config.SquareSize)/float32(ui.gameTextures[g.Board.Objects[i][j]].Width), rl.White)
+				rl.DrawTextureEx(ui.gameTextures[g.Board.Objects[i][j]], rl.NewVector2(float32(j*config.SquareSize), float32(offset+int32(i*config.SquareSize))), 0, float32(config.SquareSize)/float32(ui.gameTextures[g.Board.Objects[i][j]].Width), ui.tintFor(g.Board.Objects[i][j]))
 			}
 		}
 	}
@@ -172,6 +172,15 @@ func (ui *UI) Draw(g *Game) {
 			"?: Toggle this help screen\n"+
 			"ESC: Quit the game",
 			config.SquareSize/2)
+	}
+}
+
+func (ui *UI) tintFor(object Object) rl.Color {
+	switch object {
+	case AnotherRodent:
+		return rl.Gray
+	default:
+		return rl.White
 	}
 }
 
