@@ -52,19 +52,59 @@ func (b *Board) transformTrappedCatsToCheese() {
 
 func (b *Board) moveCat(cat *Position) {
 	rodent := b.findRodent()
+	anotherRodent := b.findAnotherRodent()
 
-	bestPosition := b.aStarPathfinding(cat, rodent)
-	if bestPosition != nil {
-		if b.at(bestPosition) == Rodent || b.at(bestPosition) == RodentSinkHole {
-			b.rodentDeath = append(b.rodentDeath, bestPosition)
+	bestPositionRodent := b.aStarPathfinding(cat, rodent)
+	var bestPositionAnotherRodent *Position
+	if anotherRodent != nil {
+		bestPositionAnotherRodent = b.aStarPathfinding(cat, anotherRodent)
+	}
+
+	if bestPositionRodent != nil && bestPositionAnotherRodent == nil {
+		// only a path to the rodent
+		if b.at(bestPositionRodent) == Rodent || b.at(bestPositionRodent) == RodentSinkHole {
+			b.rodentDeath = append(b.rodentDeath, bestPositionRodent)
 		}
-		b.set(bestPosition, Cat)
+		b.set(bestPositionRodent, Cat)
+		b.set(cat, Empty)
+		return
+	}
+
+	if bestPositionRodent == nil && bestPositionAnotherRodent != nil {
+		// only a path to another rodent
+		if b.at(bestPositionAnotherRodent) == AnotherRodent || b.at(bestPositionAnotherRodent) == AnotherRodentSinkHole {
+			b.rodentDeath = append(b.rodentDeath, bestPositionAnotherRodent)
+		}
+		b.set(bestPositionAnotherRodent, Cat)
+		b.set(cat, Empty)
+		return
+	}
+
+	if bestPositionRodent != nil && bestPositionAnotherRodent != nil {
+		// both rodents are reachable
+		if b.distance(bestPositionRodent, rodent) <= b.distance(bestPositionAnotherRodent, anotherRodent) {
+			b.set(bestPositionRodent, Cat)
+		} else {
+			b.set(bestPositionAnotherRodent, Cat)
+		}
 		b.set(cat, Empty)
 		return
 	}
 
 	possibleMoves := b.getPossibleMoves(cat)
-	bestLegalPosition := b.minimizeDistance(cat, rodent, possibleMoves)
+	var bestLegalPosition *Position
+	if rodent != nil && anotherRodent != nil {
+		if b.distance(cat, rodent) <= b.distance(cat, anotherRodent) {
+			bestLegalPosition = b.minimizeDistance(cat, rodent, possibleMoves)
+		} else {
+			bestLegalPosition = b.minimizeDistance(cat, anotherRodent, possibleMoves)
+		}
+	} else if rodent != nil {
+		bestLegalPosition = b.minimizeDistance(cat, rodent, possibleMoves)
+	} else if anotherRodent != nil {
+		bestLegalPosition = b.minimizeDistance(cat, anotherRodent, possibleMoves)
+	}
+
 	if bestLegalPosition != nil {
 		b.set(bestLegalPosition, Cat)
 		b.set(cat, Empty)
@@ -159,7 +199,7 @@ func (b *Board) isWalkable(position *Position) bool {
 		return false
 	}
 
-	return b.at(position) == Empty || b.at(position) == Rodent || b.at(position) == RodentSinkHole
+	return b.at(position) == Empty || (b.at(position) == Rodent || b.at(position) == AnotherRodent) || (b.at(position) == RodentSinkHole || b.at(position) == AnotherRodentSinkHole)
 }
 
 func (b *Board) minimizeDistance(cat, rodent *Position, possibleMoves []*Move) *Position {
@@ -196,9 +236,11 @@ func (b *Board) respawnCats() {
 		x := rl.GetRandomValue(1, 22)
 		y := rl.GetRandomValue(1, 22)
 		position := &Position{int(x), int(y)}
-		rodent := b.findRodent()
 
-		if b.at(position) == Empty && b.distance(position, rodent) > 5 {
+		rodent := b.findRodent()
+		anotherRodent := b.findAnotherRodent()
+
+		if b.at(position) == Empty && (rodent == nil || b.distance(position, rodent) > 5) && (anotherRodent == nil || b.distance(position, anotherRodent) > 5) {
 			b.set(position, Cat)
 			break
 		}

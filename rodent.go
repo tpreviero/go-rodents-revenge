@@ -17,6 +17,17 @@ var keyToMove = map[int32]*Move{
 	rl.KeyKp3:   {1, 1},
 }
 
+var keyToMoveAnother = map[int32]*Move{
+	rl.KeyW: {-1, 0},
+	rl.KeyS: {1, 0},
+	rl.KeyA: {0, -1},
+	rl.KeyD: {0, 1},
+	rl.KeyQ: {-1, -1},
+	rl.KeyE: {-1, 1},
+	rl.KeyZ: {1, -1},
+	rl.KeyC: {1, 1},
+}
+
 func (g *Game) moveRodent() {
 	resultingMove := &Move{0, 0}
 	for key, move := range keyToMove {
@@ -25,16 +36,37 @@ func (g *Game) moveRodent() {
 		}
 	}
 
-	if resultingMove.Row == 0 && resultingMove.Column == 0 {
-		return
+	if resultingMove.Row != 0 || resultingMove.Column != 0 {
+		g.move(g.Board.findRodent(), resultingMove)
 	}
-	g.move(g.Board.findRodent(), resultingMove)
+
+	resultingMove = &Move{0, 0}
+	for key, move := range keyToMoveAnother {
+		if rl.IsKeyPressed(key) {
+			resultingMove = resultingMove.compose(move)
+		}
+	}
+	if resultingMove.Row != 0 || resultingMove.Column != 0 {
+		g.move(g.Board.findAnotherRodent(), resultingMove)
+	}
 }
 
 func (b *Board) findRodent() *Position {
 	for x, row := range b.Objects {
 		for y, obj := range row {
 			if obj == Rodent || obj == RodentSinkHole {
+				return &Position{Row: x, Column: y}
+			}
+		}
+	}
+
+	return nil
+}
+
+func (b *Board) findAnotherRodent() *Position {
+	for x, row := range b.Objects {
+		for y, obj := range row {
+			if obj == AnotherRodent || obj == AnotherRodentSinkHole {
 				return &Position{Row: x, Column: y}
 			}
 		}
@@ -51,6 +83,19 @@ func (g *Game) respawnRodent() {
 
 		if g.Board.at(position) == Empty {
 			g.Board.set(position, Rodent)
+			break
+		}
+	}
+}
+
+func (g *Game) respawnAnotherRodent() {
+	for {
+		x := rl.GetRandomValue(1, 22)
+		y := rl.GetRandomValue(1, 22)
+		position := &Position{int(x), int(y)}
+
+		if g.Board.at(position) == Empty {
+			g.Board.set(position, AnotherRodent)
 			break
 		}
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	game := NewGame()
+	game := NewGame(SinglePlayer)
 
 	ui := NewUI()
 	defer ui.Close()
@@ -56,6 +56,17 @@ func (g *Game) Update() {
 		return
 	}
 
+	if rl.IsKeyDown(rl.KeyRightShift) && rl.IsKeyPressed(rl.KeyM) {
+		if g.GameType == SinglePlayer {
+			g.RemainingLives++
+			g.GameType = Cooperative
+		} else {
+			g.GameType = SinglePlayer
+			anotherRodent := g.Board.findAnotherRodent()
+			g.Board.set(anotherRodent, Empty)
+		}
+	}
+
 	if g.GameState == Playing {
 		currentTime := time.Now()
 		if currentTime.Sub(g.Board.LastCatUpdate) >= g.catUpdateInterval() {
@@ -76,6 +87,18 @@ func (g *Game) Update() {
 		g.respawnRodent()
 	}
 
+	anotherRodent := g.Board.findAnotherRodent()
+	if g.GameType == Cooperative && anotherRodent == nil {
+		// the another rodent has been eaten by a cat
+		if g.RemainingLives == 0 {
+			g.GameState = GameOver
+			return
+		}
+
+		g.RemainingLives--
+		g.respawnAnotherRodent()
+	}
+
 	if len(g.Board.findAllCats()) == 0 && g.Board.RemainingWaves == 0 {
 		g.NextLevel()
 	}
@@ -90,7 +113,7 @@ func (g *Game) move(position *Position, move *Move) bool {
 
 	b := g.Board
 
-	if b.at(position) == Rodent && b.at(next) == Cat {
+	if (b.at(position) == Rodent || b.at(position) == AnotherRodent) && b.at(next) == Cat {
 		b.set(position, Empty)
 		return true
 	}
@@ -102,7 +125,14 @@ func (g *Game) move(position *Position, move *Move) bool {
 		return true
 	}
 
-	if b.at(position) == Rodent && b.at(next) == Trap {
+	if b.at(position) == AnotherRodent && b.at(next) == Cheese {
+		b.set(position, Empty)
+		b.set(next, AnotherRodent)
+		g.Points += config.CheesePoints
+		return true
+	}
+
+	if (b.at(position) == Rodent || b.at(position) == AnotherRodent) && b.at(next) == Trap {
 		b.set(position, Empty)
 		b.set(next, Empty)
 		g.Board.rodentDeath = append(g.Board.rodentDeath, next)
@@ -112,13 +142,27 @@ func (g *Game) move(position *Position, move *Move) bool {
 	if b.at(position) == Rodent && b.at(next) == SinkHole {
 		b.set(position, Empty)
 		b.set(next, RodentSinkHole)
-		b.InSinkHoleSince = time.Now()
+		b.RodentInSinkHoleSince = time.Now()
+		return false
+	}
+
+	if b.at(position) == AnotherRodent && b.at(next) == SinkHole {
+		b.set(position, Empty)
+		b.set(next, AnotherRodentSinkHole)
+		b.AnotherRodentInSinkHoleSince = time.Now()
 		return false
 	}
 
 	if b.at(position) == RodentSinkHole {
-		if time.Now().Sub(b.InSinkHoleSince) >= config.SinkHoleDuration {
+		if time.Now().Sub(b.RodentInSinkHoleSince) >= config.SinkHoleDuration {
 			b.set(position, Rodent)
+		}
+		return false
+	}
+
+	if b.at(position) == AnotherRodentSinkHole {
+		if time.Now().Sub(b.AnotherRodentInSinkHoleSince) >= config.SinkHoleDuration {
+			b.set(position, AnotherRodent)
 		}
 		return false
 	}

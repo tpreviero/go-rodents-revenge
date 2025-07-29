@@ -47,7 +47,9 @@ func (ui *UI) Close() {
 
 func (ui *UI) LoadTextures() {
 	ui.gameTextures[Rodent] = ui.LoadTexture(Rodent.textureData())
+	ui.gameTextures[AnotherRodent] = ui.LoadTexture(Rodent.textureData())
 	ui.gameTextures[RodentSinkHole] = ui.LoadTexture(RodentSinkHole.textureData())
+	ui.gameTextures[AnotherRodentSinkHole] = ui.LoadTexture(RodentSinkHole.textureData())
 	ui.gameTextures[Cat] = ui.LoadTexture(Cat.textureData())
 	ui.gameTextures[CatResting] = ui.LoadTexture(CatResting.textureData())
 	ui.gameTextures[Cheese] = ui.LoadTexture(Cheese.textureData())
@@ -139,7 +141,7 @@ func (ui *UI) Draw(g *Game) {
 					animation.Draw(Position{Row: i, Column: j})
 				}
 			} else {
-				rl.DrawTextureEx(ui.gameTextures[g.Board.Objects[i][j]], rl.NewVector2(float32(j*config.SquareSize), float32(offset+int32(i*config.SquareSize))), 0, float32(config.SquareSize)/float32(ui.gameTextures[g.Board.Objects[i][j]].Width), rl.White)
+				rl.DrawTextureEx(ui.gameTextures[g.Board.Objects[i][j]], rl.NewVector2(float32(j*config.SquareSize), float32(offset+int32(i*config.SquareSize))), 0, float32(config.SquareSize)/float32(ui.gameTextures[g.Board.Objects[i][j]].Width), ui.tintFor(g.Board.Objects[i][j]))
 			}
 		}
 	}
@@ -166,9 +168,19 @@ func (ui *UI) Draw(g *Game) {
 			"Right Shift + DOWN: Decrease difficulty (speeds up the cats)\n"+
 			"Right Shift + RIGHT: Skip to the next level\n"+
 			"Right Shift + LEFT: Go back to the previous level\n"+
+			"Right Shift + M: Switch to between single player and cooperative game\n"+
 			"?: Toggle this help screen\n"+
 			"ESC: Quit the game",
 			config.SquareSize/2)
+	}
+}
+
+func (ui *UI) tintFor(object Object) rl.Color {
+	switch object {
+	case AnotherRodent:
+		return rl.Gray
+	default:
+		return rl.White
 	}
 }
 
