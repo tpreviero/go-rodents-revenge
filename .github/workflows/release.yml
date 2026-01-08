@@ -1,0 +1,91 @@
+name: Release Game
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v1.0.0)'
+        required: true
+        default: 'v0.1.0'
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: go-rodents-revenge-linux
+            goos: linux
+          - os: windows-latest
+            artifact_name: go-rodents-revenge-windows.exe
+            goos: windows
+          - os: macos-latest
+            artifact_name: go-rodents-revenge-macos
+            goos: darwin
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+
+      - name: Install Dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwayland-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev xxd
+
+      - name: Install Dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install xxd
+
+      - name: Generate Assets Header (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          rm -f assets.h
+          for i in assets/*.png; do xxd -i "$i" >> assets.h; done
+
+      - name: Generate Assets Header (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: |
+          rm -f assets.h
+          for i in assets/*.png; do xxd -i "$i" >> assets.h; done
+
+      - name: Build
+        env:
+          GOOS: ${{ matrix.goos }}
+          CGO_ENABLED: 1
+        run: go build -o ${{ matrix.artifact_name }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_name }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: false
+          files: |
+            go-rodents-revenge-linux/go-rodents-revenge-linux
+            go-rodents-revenge-windows.exe/go-rodents-revenge-windows.exe
+            go-rodents-revenge-macos/go-rodents-revenge-macos
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
