@@ -8,6 +8,9 @@ on:
         required: true
         default: 'v0.1.0'
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build for ${{ matrix.os }}
@@ -38,11 +41,11 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwayland-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libgl1-mesa-dev xxd
+          sudo apt-get install -y libc6-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libgl-dev libxinerama-dev libxkbcommon-dev libxrandr-dev x11proto-dev xxd
 
       - name: Install Dependencies (macOS)
         if: matrix.os == 'macos-latest'
-        run: brew install xxd
+        run: brew install vim
 
       - name: Generate Assets Header (Unix)
         if: matrix.os != 'windows-latest'
