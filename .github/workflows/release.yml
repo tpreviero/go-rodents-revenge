@@ -41,24 +41,7 @@ jobs:
         if: matrix.os == 'ubuntu-latest'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libc6-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libgl-dev libxinerama-dev libxkbcommon-dev libxrandr-dev x11proto-dev xxd
-
-      - name: Install Dependencies (macOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install vim
-
-      - name: Generate Assets Header (Unix)
-        if: matrix.os != 'windows-latest'
-        run: |
-          rm -f assets.h
-          for i in assets/*.png; do xxd -i "$i" >> assets.h; done
-
-      - name: Generate Assets Header (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: bash
-        run: |
-          rm -f assets.h
-          for i in assets/*.png; do xxd -i "$i" >> assets.h; done
+          sudo apt-get install -y libc6-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libgl-dev libxinerama-dev libxkbcommon-dev libxrandr-dev x11proto-dev
 
       - name: Build
         env:
