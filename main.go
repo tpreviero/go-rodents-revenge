@@ -1,6 +1,5 @@
 package main
 
-import "C"
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"time"
