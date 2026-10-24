@@ -9,11 +9,7 @@ Obviously <u>**I do not own the rights to the original game**</u>, but I wanted 
 
 ## Compile and run the game
 1. Make sure you have Go installed on your machine. You can download it from [here](https://golang.org/dl/).
-2. Compile the assets into a `C` header file.
-   ```bash
-   rm -rf assets.h && for i in assets/*.png; do xxd -i $i >> assets.h; done
-   ```
-3. Run `go build && ./go-rodents-revenge`
+2. Run `go build && ./go-rodents-revenge`
 
 ## Controls
 - _Arrow keys_: Move the rodent (8 directions)

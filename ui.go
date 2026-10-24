@@ -5,11 +5,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"strconv"
 	"strings"
-	"unsafe"
 )
-
-// #include "assets.h"
-import "C"
 
 type Animation struct {
 	texture      rl.Texture2D
@@ -58,31 +54,31 @@ func (ui *UI) LoadTextures() {
 	ui.gameTextures[SinkHole] = ui.LoadTexture(SinkHole.textureData())
 	ui.gameTextures[Trap] = ui.LoadTexture(Trap.textureData())
 
-	ui.rodentLives = ui.LoadTexture(C.GoBytes(unsafe.Pointer(&(C.assets_rodent_lives_png[0])), C.int(C.assets_rodent_lives_png_len)))
-	ui.rodentDeath = ui.LoadTexture(C.GoBytes(unsafe.Pointer(&(C.assets_rodent_death_png[0])), C.int(C.assets_rodent_death_png_len)))
-	ui.clock = ui.LoadTexture(C.GoBytes(unsafe.Pointer(&(C.assets_clock_png[0])), C.int(C.assets_clock_png_len)))
+	ui.rodentLives = ui.LoadTexture(rodentLivesPng)
+	ui.rodentDeath = ui.LoadTexture(rodentDeathPng)
+	ui.clock = ui.LoadTexture(clockPng)
 }
 
 func (o Object) textureData() []byte {
 	switch o {
 	case Rodent:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_rodent_png[0])), C.int(C.assets_rodent_png_len))
+		return rodentPng
 	case RodentSinkHole:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_sinkhole_rodent_png[0])), C.int(C.assets_sinkhole_rodent_png_len))
+		return sinkholeRodentPng
 	case Cat:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_cat_png[0])), C.int(C.assets_cat_png_len))
+		return catPng
 	case CatResting:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_cat_rest_png[0])), C.int(C.assets_cat_rest_png_len))
+		return catRestPng
 	case Cheese:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_cheese_png[0])), C.int(C.assets_cheese_png_len))
+		return cheesePng
 	case Obstacle:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_obstacle_png[0])), C.int(C.assets_obstacle_png_len))
+		return obstaclePng
 	case Wall:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_wall_png[0])), C.int(C.assets_wall_png_len))
+		return wallPng
 	case SinkHole:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_sinkhole_png[0])), C.int(C.assets_sinkhole_png_len))
+		return sinkholePng
 	case Trap:
-		return C.GoBytes(unsafe.Pointer(&(C.assets_trap_png[0])), C.int(C.assets_trap_png_len))
+		return trapPng
 	default:
 		panic(fmt.Sprintf("could not find texture textureData for object %d", o))
 	}
